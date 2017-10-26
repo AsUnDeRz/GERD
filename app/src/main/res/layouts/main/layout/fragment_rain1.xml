@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/input_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="10dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ระบุข้อมูลปริมาณน้ำฝน"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@id/title"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
+                        android:text="ต้องการดูปริมาณน้ำฝนสะสมราย" />
+
+                    <EditText
+                        android:id="@+id/spinner"
+                        android:layout_width="60dp"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/title"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_toEndOf="@+id/txt_back"
+                        android:digits="0123456789"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:maxLines="1"></EditText>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/title"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_toEndOf="@+id/spinner"
+                        android:gravity="center"
+                        android:text="วัน" />
+
+                    <TextView
+                        android:id="@+id/txt_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@id/txt_back"
+                        android:gravity="center"
+                        android:text="ข้อมูลจนถึงวันที่" />
+
+                    <EditText
+                        android:id="@+id/edt_date"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_back"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/txt_date"
+                        android:gravity="center"
+                        android:inputType="text"
+                        android:text="22/10/2560" />
+
+                    <TextView
+                        android:id="@+id/txt_date_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_date"
+                        android:gravity="center"
+                        android:text="ข้อมูลย้อนหลังจำนวน" />
+
+                    <EditText
+                        android:id="@+id/edt_date_back"
+                        android:layout_width="60dp"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_date"
+                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@+id/txt_date_back"
+                        android:digits="0123456789"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:maxLines="1"
+                        android:text="2"></EditText>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_date"
+                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@+id/edt_date_back"
+                        android:gravity="center"
+                        android:text="วัน" />
+
+                    <TextView
+                        android:id="@+id/txt_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_date_back"
+                        android:gravity="center"
+                        android:text="ภูมิภาค" />
+
+                    <EditText
+                        android:id="@+id/edt_location"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_date_back"
+                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@+id/txt_location"
+                        android:gravity="center"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:text="ภาคเหนือ"></EditText>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/txt_date"
+                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@+id/edt_date_back"
+                        android:gravity="center"
+                        android:text="วัน" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txt_location"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_update_list"
+                            android:layout_width="150dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_grey"
+                            android:text="ปรับปรุง" />
+
+                        <android.support.v4.widget.Space
+                            android:layout_width="20dp"
+                            android:layout_height="match_parent" />
+
+                        <Button
+                            android:id="@+id/btn_update_grap"
+                            android:layout_width="150dp"
+                            android:layout_height="40dp"
+                            android:layout_below="@id/txt_date_back"
+                            android:layout_toRightOf="@+id/btn_update_list"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_grey"
+                            android:text="แสดงกราฟ" />
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <ViewStub
+                android:id="@+id/viewRoot"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/input_card"
+                android:layout="@layout/chart" />
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
