@@ -5,8 +5,10 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,22 +23,21 @@ import asunder.toche.gerd.Data.locations
 import asunder.toche.gerd.Data.totalRain
 import asunder.toche.gerd.Utils.initRain
 import com.afollestad.materialdialogs.MaterialDialog
+import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout
+import com.cleveroad.adaptivetablelayout.OnItemClickListener
+import com.cleveroad.adaptivetablelayout.OnItemLongClickListener
 import com.github.ajalt.timberkt.Timber.d
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.charts.ScatterChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.EntryXComparator
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
-import kotlinx.android.synthetic.main.activity_rain.*
 import kotlinx.android.synthetic.main.fragment_rain1.*
-import kotlinx.android.synthetic.main.fragment_rain2.*
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -44,7 +45,30 @@ import kotlin.collections.ArrayList
 /**
  * Created by ToCHe on 10/23/2017 AD.
  */
-class RainFragment1:Fragment(){
+class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
+    override fun onColumnHeaderClick(column: Int) {
+            d {"onColumnHeaderClick $column"}
+    }
+
+    override fun onRowHeaderClick(row: Int) {
+        d {"onRowHeaderClick $row"}
+    }
+
+    override fun onLeftTopHeaderClick() {
+        d {"onLeftnHeaderClick"}
+    }
+
+    override fun onItemClick(row: Int, column: Int) {
+        d {"onItemClick row $row column $column"}
+    }
+
+    override fun onItemLongClick(row: Int, column: Int) {
+        d {"onItemLongClick row $row column $column"}
+    }
+
+    override fun onLeftTopHeaderLongClick() {
+        d {"onLeftTopHeaderClick"}
+    }
 
     companion object {
         fun newInstance():RainFragment1 {
@@ -54,6 +78,7 @@ class RainFragment1:Fragment(){
 
     private var localID: Int =0
     lateinit var mChart : LineChart
+    lateinit var tableView : AdaptiveTableLayout
     var dataR : MutableList<Model.valRain> = ArrayList()
 
 
@@ -64,8 +89,13 @@ class RainFragment1:Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater?.inflate(R.layout.fragment_rain1, container, false)
+        tableView = view!!.findViewById(R.id.tableLayout)
+
+
         return view
     }
+
+    val DATA_TO_SHOW = arrayOf(arrayOf("This", "is", "a", "test"), arrayOf("and", "a", "second", "test"))
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,6 +107,9 @@ class RainFragment1:Fragment(){
         viewRoot.inflate()
         initGraph(view!!)
 
+
+        //tableView.headerAdapter = SimpleTableHeaderAdapter(activity,"วันที่", "ปริมาณน้ำฝน", "น้ำสะสม3วัน", "ระดับความเสี่ยงต่อการเกิดดินถล่ม")
+        //tableView.dataAdapter = SimpleTableDataAdapter(activity,DATA_TO_SHOW)
 
         PushDown.setOnTouchPushDown(btn_update_grap)
         PushDown.setOnTouchPushDown(btn_update_list)
@@ -97,13 +130,7 @@ class RainFragment1:Fragment(){
             }
             */
             Utils.CalRainFall(dataR,data)
-
-
-            data.forEach {
-                d{it.toString()}
-            }
             setData(localID,data)
-
 
         }
 

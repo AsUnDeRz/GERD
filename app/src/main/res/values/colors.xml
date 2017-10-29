@@ -9,5 +9,8 @@
     <color name="red">#FF0000</color>
     <color name="grey">#bbbbbb</color>
     <color name="greenLine">#00CC00</color>
-</resources>
 
+    <color name="charcoal">#c8ffffff</color>
+    <color name="medium_jungle_green">#FF273238</color>
+</resources>
+<!--  <color name="charcoal">#FF394249</color> -->

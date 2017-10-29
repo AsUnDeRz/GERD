@@ -1,1 +1,1 @@
-include ':app', ':SpinnerDatePicker'
+include ':app', ':SpinnerDatePicker', ':Adaptive'

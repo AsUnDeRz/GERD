@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="asunder.toche.gerd">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -15,14 +19,17 @@
         <activity android:name=".WebViewActivity" />
         <activity android:name=".ActivityHome"
             android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity android:name=".ActivityRain"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ActivityTable" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActivityRain"
-            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

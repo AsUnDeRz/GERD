@@ -15,6 +15,13 @@ object Utils {
         return fmtOut.format(date)
     }
 
+    fun getPreviusDate(date:Date):String{
+        var calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar.add(Calendar.DATE, -1)
+        return getDateSlash(calendar.time)
+    }
+
 
 
     fun CalEq(r : MutableList<Model.valRain>) : Model.Eq{
@@ -96,6 +103,15 @@ String yesterdayAsString = dateFormat.format(calendar.getTime());
                     -1
             }
         }
+    }
+
+    fun convertData(){
+
+
+
+
+
+
     }
 
 

@@ -182,12 +182,32 @@
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
 
+
             <ViewStub
                 android:id="@+id/viewRoot"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/input_card"
+                android:layout_below="@+id/tableLayout"
                 android:layout="@layout/chart" />
+
+            <com.cleveroad.adaptivetablelayout.AdaptiveTableLayout
+                android:id="@+id/tableLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/input_card"
+                app:cellMargin="1dp"
+                app:dragAndDropEnabled="true"
+                app:fixedHeaders="true"
+                app:solidRowHeaders="true" />
+            <!--
+
+                <de.codecrafters.tableview.TableView
+                android:layout_below="@id/input_card"
+                android:id="@+id/tableView"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                app:tableView_columnCount="4" />
+                -->
 
         </RelativeLayout>
     </ScrollView>

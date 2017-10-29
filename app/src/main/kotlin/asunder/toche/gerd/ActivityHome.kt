@@ -1,7 +1,9 @@
 package asunder.toche.gerd
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -16,9 +18,9 @@ import android.view.View
 import utils.CustomTabActivityHelper
 import android.view.WindowManager
 import android.os.Build
+import android.support.v4.app.ActivityCompat
 import asunder.toche.gerd.R.id.toolbar
-
-
+import com.github.ajalt.timberkt.Timber.d
 
 
 /**
@@ -28,6 +30,9 @@ class ActivityHome:AppCompatActivity(){
 
     private var mCustomTabActivityHelper: CustomTabActivityHelper? = null
 
+    var permissions = arrayOf(Manifest.permission.INTERNET,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +55,7 @@ class ActivityHome:AppCompatActivity(){
         //videoView.isDrawingCacheEnabled = true
         //videoView.setVideoURI(Uri.parse("android.resource://"+ packageName +"/"+R.raw.footage))
         //videoView.start()
+        checkPermission()
 
         val mp = MediaPlayer.create(this, R.raw.footage)
 
@@ -66,6 +72,8 @@ class ActivityHome:AppCompatActivity(){
 
             override fun surfaceDestroyed(holder: SurfaceHolder) {}
         })
+
+
 
 
         PushDown.setOnTouchPushDown(btn_link1)
@@ -94,6 +102,30 @@ class ActivityHome:AppCompatActivity(){
 
     }
 
+    fun checkPermission(){
+        var result: Int
+        val listPermissionsNeeded = ArrayList<String>()
+        for (p in permissions) {
+            result = ContextCompat.checkSelfPermission(this, p)
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(p)
+            }
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toTypedArray(), 100)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // do something
+                d{"All permission granted"}
+            }
+            return
+        }
+
+    }
 
     private fun openCustomTab(URL: String) {
 
