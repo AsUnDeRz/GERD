@@ -1,16 +1,20 @@
 package adapter
 
+import android.content.Context
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
-import asunder.toche.gerd.Model
-import asunder.toche.gerd.R
-import asunder.toche.gerd.Utils
+import asunder.toche.gerd.*
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.ajalt.timberkt.d
 import java.util.*
 
@@ -18,7 +22,7 @@ import java.util.*
 /**
  * Created by ToCHe on 10/26/2017 AD.
  */
-class RainAdapter(var data:MutableList<Model.Rain>) : RecyclerView.Adapter<RainAdapter.RainHolder>(){
+class RainAdapter(var data:MutableList<Model.Rain>,var limit:String) : RecyclerView.Adapter<RainAdapter.RainHolder>(){
 
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RainHolder {
@@ -73,7 +77,44 @@ class RainAdapter(var data:MutableList<Model.Rain>) : RecyclerView.Adapter<RainA
                 }
             })
 
+            if(adapterPosition == data.size-1){
+                edtRain?.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        val imm = edtRain.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(edtRain.windowToken, 0)
+                        //Snackbar.make(edtRain,"DONE",Snackbar.LENGTH_LONG).show()
+                        DialogSave(edtRain.context)
+                        return@OnEditorActionListener true
+                    }
+                    false
+                })
+            }
+
         }
 
+    }
+
+    fun DialogSave(context: Context){
+        MaterialDialog.Builder(context)
+                .content("คุณต้องการบันทึกข้อมูลปริมาณน้ำฝนย้อนหลังหรือไม่")
+                .positiveText("ตกลง")
+                .negativeText("ยกเลิก")
+                .onPositive { dialog, which ->
+                    //save data
+                    val appDb = AppDatabase(context)
+                    if(appDb.getRainList(limit).size > 0) {
+                        d{" Compare for update or add Rain data"}
+                        Utils.compareData(AppDatabase(context), data, limit)
+                    }else{
+                        d { "add new Rain data 1st" }
+                        data.forEach {
+                            appDb.addRain(it.currentRain,it.date.time)
+                        }
+                    }
+                    d{"Check size after update =${appDb.getRainList(limit).size}"}
+                    dialog.dismiss()
+                    ActivityRain.viewPager.setCurrentItem(0,true)
+                }
+                .show()
     }
 }

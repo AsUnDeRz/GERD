@@ -3,9 +3,7 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.2-M2/bfeaf6bd34575f122927ee93b067f50b3f1676a3/kotlin-stdlib-1.2-M2.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.2-M2/8bbb85a28118f9e903d63bff8cb533bfa84fccbf/kotlin-stdlib-1.2-M2-javadoc.jar!/" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.2-M2/5d52c2fcca590681685124a8e67672e0c7e01588/kotlin-stdlib-1.2-M2-sources.jar!/" />
     </SOURCES>

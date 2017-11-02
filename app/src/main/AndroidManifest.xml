@@ -7,9 +7,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:largeHeap="true"
         android:name=".MyApp"
         android:allowBackup="true"
-        android:icon="@drawable/logo_gerd"
+        android:icon="@drawable/logo_gerd_big"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -18,17 +19,20 @@
         </activity>
         <activity android:name=".WebViewActivity" />
         <activity android:name=".ActivityHome"
+            android:hardwareAccelerated="false"
             android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
-        <activity android:name=".ActivityRain"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".ActivityTable" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".ActivityRain"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ActivityTable"
+            android:hardwareAccelerated="false">
+
+
         </activity>
     </application>
 

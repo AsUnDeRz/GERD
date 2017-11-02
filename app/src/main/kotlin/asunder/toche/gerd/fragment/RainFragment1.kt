@@ -2,13 +2,12 @@ package asunder.toche.gerd
 
 import adapter.RainAdapter
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +20,6 @@ import asunder.toche.gerd.Data.SouthRain
 import asunder.toche.gerd.Data.WestRain
 import asunder.toche.gerd.Data.locations
 import asunder.toche.gerd.Data.totalRain
-import asunder.toche.gerd.Utils.initRain
 import com.afollestad.materialdialogs.MaterialDialog
 import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout
 import com.cleveroad.adaptivetablelayout.OnItemClickListener
@@ -78,18 +76,18 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
 
     private var localID: Int =0
     lateinit var mChart : LineChart
-    lateinit var tableView : AdaptiveTableLayout
+    lateinit var appDb:AppDatabase
     var dataR : MutableList<Model.valRain> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appDb = AppDatabase(context)
 
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater?.inflate(R.layout.fragment_rain1, container, false)
-        tableView = view!!.findViewById(R.id.tableLayout)
 
 
         return view
@@ -99,6 +97,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         edt_date_back.setText("30")
         spinner.setText("3")
@@ -114,7 +113,8 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         PushDown.setOnTouchPushDown(btn_update_grap)
         PushDown.setOnTouchPushDown(btn_update_list)
         btn_update_list.setOnClickListener {
-            RainFragment2.adapter = RainAdapter(initRain(edt_date_back.text.toString().toInt()))
+            //cal database
+            RainFragment2.adapter = RainAdapter(Utils.synchronizeData(appDb,edt_date_back.text.toString()),edt_date_back.text.toString())
             RainFragment2.rvDate.adapter = RainFragment2.adapter
             viewPager.setCurrentItem(1,true)
 
@@ -131,7 +131,26 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
             */
             Utils.CalRainFall(dataR,data)
             setData(localID,data)
+            scrollView.fullScroll(View.FOCUS_DOWN)
+            val lastChild = scrollView.getChildAt(scrollView.childCount - 1)
+            val bottom = lastChild.bottom + scrollView.paddingBottom
+            val sy = scrollView.scrollY
+            val sh = scrollView.height
+            val delta = bottom - (sy + sh)
 
+            scrollView.postDelayed({
+                scrollView.smoothScrollBy(0, delta)
+            },2000)
+        }
+
+        btn_table.setOnClickListener {
+            val dR = Intent()
+            var rawData = ArrayList<Model.valRain>()
+            dataR.forEach {
+                rawData.add(it)
+            }
+            dR.putParcelableArrayListExtra("dr",rawData)
+            startActivity(dR.setClass(activity,ActivityTable::class.java))
         }
 
         spinner.setOnClickListener { view ->

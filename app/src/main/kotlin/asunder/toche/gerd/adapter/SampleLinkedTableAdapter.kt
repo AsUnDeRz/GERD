@@ -3,8 +3,6 @@ package asunder.toche.gerd
 import android.content.Context
 import android.graphics.Color
 import android.widget.TextView
-import android.support.annotation.NonNull
-import com.cleveroad.adaptivetablelayout.ViewHolderImpl
 import android.support.v4.graphics.ColorUtils
 import android.graphics.drawable.GradientDrawable
 import android.support.v4.content.ContextCompat
@@ -19,6 +17,7 @@ import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.request.target.Target
 import com.cleveroad.adaptivetablelayout.LinkedAdaptiveTableAdapter
+import com.cleveroad.adaptivetablelayout.ViewHolderImpl
 import java.lang.Exception
 
 
@@ -147,7 +146,7 @@ class SampleLinkedTableAdapter(var context: Context,var mTableDataSource: TableD
 
     //------------------------------------- view holders ------------------------------------------
 
-   class TestViewHolder (itemView: View) : ViewHolderImpl(itemView) {
+    class TestViewHolder (itemView: View) : ViewHolderImpl(itemView) {
         var tvText: TextView
         var ivImage: ImageView
 
@@ -158,7 +157,7 @@ class SampleLinkedTableAdapter(var context: Context,var mTableDataSource: TableD
         }
     }
 
-    class TestHeaderColumnViewHolder (itemView: View) : ViewHolderImpl(itemView) {
+     class TestHeaderColumnViewHolder (itemView: View) : ViewHolderImpl(itemView) {
          var tvText: TextView
          //var vGradient: View
          var vLine: View
@@ -178,7 +177,7 @@ class SampleLinkedTableAdapter(var context: Context,var mTableDataSource: TableD
         }
     }
 
-   class TestHeaderLeftTopViewHolder (itemView: View) : ViewHolderImpl(itemView) {
+    class TestHeaderLeftTopViewHolder (itemView: View) : ViewHolderImpl(itemView) {
          var tvText: TextView
 
         init {

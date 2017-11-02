@@ -13,7 +13,7 @@
         android:layout_gravity="center"
         android:focusableInTouchMode="true"
         android:gravity="center"
-        android:textSize="14sp"
+        android:textSize="@dimen/table_text_size"
         tools:text="Text" />
 
     <ImageView

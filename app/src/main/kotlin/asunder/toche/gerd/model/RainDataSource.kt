@@ -69,7 +69,7 @@ class RainDataSource(val data:MutableList<Model.Rain>) : TableDataSource<String,
          //result.addAll(data[rowIndex])
 
         if(rowIndex == 0) {
-            val db =arrayOf("วันที่","ระดับความเสี่ยง", "น้ำฝนสะสม3วัน","ปริมาณน้ำฝน","ช่วงเวลา"  )
+            val db =arrayOf("วันที่","ปริมาณน้ำฝน","น้ำฝนสะสม3วัน","ระดับความเสี่ยง","ช่วงเวลา"  )
             result.addAll(db)
 
         }else{
@@ -81,15 +81,15 @@ class RainDataSource(val data:MutableList<Model.Rain>) : TableDataSource<String,
                     HIGH -> { status="สูง"}
                     NORMAL -> { status="ปานกลาง"}
                 }
-                add(status)
-                add(data[rowIndex].previousRain.toInt().toString())
                 add(data[rowIndex].currentRain.toInt().toString())
+                add(data[rowIndex].previousRain.toInt().toString())
+                add(status)
                 add("07:00 ${Utils.getPreviusDate(data[rowIndex].date)} - 07:00 ${Utils.getDateSlash(data[rowIndex].date)}")
             }
         }
 
 
-        d{"Check Data row$rowIndex  [$result]"}
+        //d{"Check Data row$rowIndex  [$result]"}
 
         return result
     }

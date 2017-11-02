@@ -19,8 +19,10 @@ import utils.CustomTabActivityHelper
 import android.view.WindowManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
+import android.widget.Toast
 import asunder.toche.gerd.R.id.toolbar
 import com.github.ajalt.timberkt.Timber.d
+import java.util.*
 
 
 /**
@@ -57,25 +59,6 @@ class ActivityHome:AppCompatActivity(){
         //videoView.start()
         checkPermission()
 
-        val mp = MediaPlayer.create(this, R.raw.footage)
-
-        val sv = findViewById<View>(R.id.surfaceView1) as SurfaceView
-        val holder = sv.holder
-        holder.addCallback(object : SurfaceHolder.Callback{
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                mp.setDisplay(holder)
-                mp.start()
-                mp.isLooping = true
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder) {}
-        })
-
-
-
-
         PushDown.setOnTouchPushDown(btn_link1)
         PushDown.setOnTouchPushDown(btn_link2)
         PushDown.setOnTouchPushDown(btn_link3)
@@ -95,10 +78,8 @@ class ActivityHome:AppCompatActivity(){
         btn_link4.setOnClickListener {
             //openCustomTab("http://158.108.44.242/dmrweb/")
             startActivity(Intent().setClass(this@ActivityHome,ActivityRain::class.java))
+            finish()
         }
-
-
-
 
     }
 
@@ -139,7 +120,7 @@ class ActivityHome:AppCompatActivity(){
         intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.green))
 
         //กำหนดให้มี Animation เมื่อ Custom tab เข้ามาและออกไป ถ้าไม่มีจะเหมือน Activity ที่เด้งเข้ามาเลย
-        setAnimation(intentBuilder)
+       // setAnimation(intentBuilder)
 
         //Launch Custome tab ให้ทำงาน
         CustomTabActivityHelper.openCustomTab(
@@ -154,11 +135,12 @@ class ActivityHome:AppCompatActivity(){
     // You can use this callback to make UI changes
     private val mConnectionCallback = object : CustomTabActivityHelper.ConnectionCallback {
         override fun onCustomTabsConnected() {
-            //Toast.makeText(this@PointHistriesActivity, "Connected to service", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this@ActivityHome, "Connected to service", Toast.LENGTH_SHORT).show()
+            recreate()
         }
 
         override fun onCustomTabsDisconnected() {
-            //Toast.makeText(this@PointHistriesActivity, "Disconnected from service", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this@ActivityHome, "Disconnected to service", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -177,7 +159,33 @@ class ActivityHome:AppCompatActivity(){
         override fun openUri(activity: Activity, uri: Uri) {
             val intent = Intent(activity, WebViewActivity::class.java)
             intent.putExtra("KEY_URL", uri.toString())
-            activity.startActivity(intent)
+            startActivity(intent)
+            finish()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val mp = MediaPlayer.create(this, R.raw.footage)
+
+        val sv = findViewById<View>(R.id.surfaceView1) as SurfaceView
+        val holder = sv.holder
+        holder.addCallback(object : SurfaceHolder.Callback{
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+                d{"Surface onChanged"}
+
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                d{"Surface onCreate"}
+                mp.setDisplay(holder)
+                mp.start()
+                mp.isLooping = true
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                d{"Surface onDestroyed"}
+            }
+        })
     }
 }

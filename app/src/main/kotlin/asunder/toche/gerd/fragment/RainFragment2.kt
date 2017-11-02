@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import asunder.toche.gerd.Utils.initRain
+import com.github.ajalt.timberkt.Timber.d
 import kotlinx.android.synthetic.main.activity_rain.*
 import kotlinx.android.synthetic.main.fragment_rain2.*
 import java.util.*
@@ -31,10 +32,13 @@ class RainFragment2:Fragment(){
         lateinit var adapter:RainAdapter
 
     }
+    lateinit var appDb:AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = RainAdapter(initRain(30))
+        appDb = AppDatabase(context)
+        adapter = RainAdapter(Utils.synchronizeData(appDb,"30"), "30")
+
 
     }
 
@@ -50,6 +54,10 @@ class RainFragment2:Fragment(){
         rvDate.layoutManager = LinearLayoutManager(activity)
         rvDate.hasFixedSize()
         rvDate.adapter = adapter
+
+        btn_save.setOnClickListener {
+            adapter.DialogSave(context)
+        }
     }
 
 

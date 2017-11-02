@@ -4,9 +4,7 @@
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/core-0.9.4.7.aar/030c23ab009f5db5d0b0f9994f7e3a87/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/core-0.9.4.7.aar/030c23ab009f5db5d0b0f9994f7e3a87/res" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.afollestad.material-dialogs/core/0.9.4.7/4c7879f0bfaddbaa730ec2e923a79adeeb88aaaf/core-0.9.4.7-javadoc.jar!/" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.afollestad.material-dialogs/core/0.9.4.7/da6b5b5151cf7be8a246a4d73c04e80e02b2fef5/core-0.9.4.7-sources.jar!/" />
     </SOURCES>

@@ -1,5 +1,6 @@
 package asunder.toche.gerd
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.webkit.WebViewClient
@@ -15,7 +16,6 @@ class WebViewActivity:AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.webview)
-
 
         val url = intent.getStringExtra("KEY_URL")
         webView.webViewClient = WebViewClient()

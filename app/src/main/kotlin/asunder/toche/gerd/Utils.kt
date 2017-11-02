@@ -3,7 +3,10 @@ package asunder.toche.gerd
 import com.github.ajalt.timberkt.Timber.d
 import com.github.mikephil.charting.data.Entry
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by ToCHe on 10/21/2017 AD.
@@ -72,12 +75,12 @@ object Utils {
 
     fun initRain(size:Int):MutableList<Model.Rain>{
         var data: MutableList<Model.Rain> = ArrayList()
-
         for(i in -size until  0){
             val calendar = Calendar.getInstance()
             calendar.time = Date()
+            calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),7,0,0)
             calendar.add(Calendar.DATE,i)
-            data.add(Model.Rain(calendar.time,0.0f,0.0f,Model.StatusRain.LOW))
+            data.add(Model.Rain(0,calendar.time,0.0f,0.0f,Model.StatusRain.LOW))
         }
         /*
         String sDate = "31012014";
@@ -105,13 +108,50 @@ String yesterdayAsString = dateFormat.format(calendar.getTime());
         }
     }
 
-    fun convertData(){
+    fun compareData(appDb:AppDatabase,dataNew:MutableList<Model.Rain>,limit:String){
+        var dataInDb = appDb.getRainList(limit)
+        dataNew.forEach {
+            d{"Data New "+it.toString()}
+        }
+        dataInDb.sortBy { it.date }
+        for(a in dataInDb){
+            //update rain when map date but values is dif
+            dataNew.filter { Utils.getDateSlash(it.date) == Utils.getDateSlash(a.date) }
+                    .forEach {
+                        if(it.currentRain != a.currentRain){
+                            d{"Update current rain in db"}
+                            appDb.updateRain(Model.Rain(a.id,it.date,it.currentRain,0.0f,Model.StatusRain.LOW))
+                        }
+                    }
+           // d{"Check size dataNew ${dataNew.size}"}
+        }
 
+        //filter new date
+        dataNew.filter { dataInDb[dataInDb.lastIndex].date.time < it.date.time }
+                .forEach {
+                    d{"have newDate more one"}
+                    d{Utils.getDateSlash(it.date)}
+                    //add to database
+                    appDb.addRain(it.currentRain,it.date.time)
+                }
+    }
 
+    fun synchronizeData(appDb: AppDatabase,limit: String):MutableList<Model.Rain> {
+        var rawData = appDb.getRainList("30")
+        var newData = initRain(limit.toInt())
 
-
-
-
+        d{"Check rawData size ${rawData.size} newData size ${newData.size}"}
+        if(rawData.size > 0){
+            for(raw in rawData){
+                newData.filter { Utils.getDateSlash(it.date) == Utils.getDateSlash(raw.date) }
+                        .forEach {
+                            it.currentRain = raw.currentRain
+                        }
+            }
+            return newData
+        }else{
+            return newData
+        }
     }
 
 
