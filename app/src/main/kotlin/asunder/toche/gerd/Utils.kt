@@ -82,6 +82,9 @@ object Utils {
             calendar.add(Calendar.DATE,i)
             data.add(Model.Rain(0,calendar.time,0.0f,0.0f,Model.StatusRain.LOW))
         }
+        data.removeAt(0)
+        data.add(Model.Rain(0,Date(),0.0f,0.0f,Model.StatusRain.LOW))
+
         /*
         String sDate = "31012014";
 SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.getDefault());
@@ -91,6 +94,7 @@ calendar.setTime(date);
 calendar.add(Calendar.DATE, -1);
 String yesterdayAsString = dateFormat.format(calendar.getTime());
          */
+        data.sortByDescending { it.date }
         return data
     }
 

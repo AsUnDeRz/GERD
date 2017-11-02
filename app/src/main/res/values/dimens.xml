@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="column_width">120dp</dimen>
+    <dimen name="column_width">150dp</dimen>
     <dimen name="row_height">80dp</dimen>
     <dimen name="column_header_height">60dp</dimen>
-    <dimen name="row_header_width">80dp</dimen>
-    <dimen name="row_header_size">12sp</dimen>
-    <dimen name="table_text_size">12sp</dimen>
+    <dimen name="row_header_width">100dp</dimen>
+    <dimen name="row_header_size">14sp</dimen>
+    <dimen name="table_text_size">14sp</dimen>
+    <bool name="isTablet">false</bool>
 
 
 </resources>

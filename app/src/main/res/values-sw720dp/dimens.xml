@@ -6,5 +6,6 @@
     <dimen name="row_header_width">120dp</dimen>
     <dimen name="row_header_size">18sp</dimen>
     <dimen name="table_text_size">16sp</dimen>
+    <bool name="isTablet">true</bool>
 
 </resources>

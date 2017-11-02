@@ -39,14 +39,7 @@ class ActivityHome:AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        // Toolbar :: Transparent
         toolbar.setBackgroundColor(Color.TRANSPARENT)
-
-        //setSupportActionBar(toolbar)
-        //supportActionBar!!.title = "GERD"
-
-
-        // Status bar :: Transparent
         val window = this.window
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -54,9 +47,6 @@ class ActivityHome:AppCompatActivity(){
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = Color.TRANSPARENT
         }
-        //videoView.isDrawingCacheEnabled = true
-        //videoView.setVideoURI(Uri.parse("android.resource://"+ packageName +"/"+R.raw.footage))
-        //videoView.start()
         checkPermission()
 
         PushDown.setOnTouchPushDown(btn_link1)
@@ -67,7 +57,6 @@ class ActivityHome:AppCompatActivity(){
             openCustomTab("http://www.landslide-engineering.com/warningls.php")
         }
         btn_link2.setOnClickListener {
-            //startActivity(Intent().setClass(this@ActivityHome,ActivityMain::class.java))
             openCustomTab("http://158.108.44.242/dmrweb/")
 
         }
@@ -76,7 +65,6 @@ class ActivityHome:AppCompatActivity(){
         }
 
         btn_link4.setOnClickListener {
-            //openCustomTab("http://158.108.44.242/dmrweb/")
             startActivity(Intent().setClass(this@ActivityHome,ActivityRain::class.java))
             finish()
         }

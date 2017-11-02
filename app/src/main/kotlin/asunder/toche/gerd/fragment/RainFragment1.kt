@@ -121,26 +121,18 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         }
 
         btn_update_grap.setOnClickListener {
-            val data = RainFragment2.adapter.data
+           loadChart()
             /*
-            val data =initRain(10)
-            for(d in data){
-                val r = (Math.random() * (50f - 10f)) + 10f
-                d.currentRain = r.toInt().toFloat()
-            }
-            */
-            Utils.CalRainFall(dataR,data)
-            setData(localID,data)
             scrollView.fullScroll(View.FOCUS_DOWN)
             val lastChild = scrollView.getChildAt(scrollView.childCount - 1)
             val bottom = lastChild.bottom + scrollView.paddingBottom
             val sy = scrollView.scrollY
             val sh = scrollView.height
             val delta = bottom - (sy + sh)
-
             scrollView.postDelayed({
                 scrollView.smoothScrollBy(0, delta)
             },2000)
+            */
         }
 
         btn_table.setOnClickListener {
@@ -177,6 +169,13 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
 
     }
 
+    fun loadChart(){
+        val data = RainFragment2.adapter.data
+        data.sortByDescending { it.date }
+        Utils.CalRainFall(dataR,data)
+        setData(localID,data)
+    }
+
     fun showRain(){
         MaterialDialog.Builder(activity)
                 .title("ปริมาณน้ำฝนสะสมราย/วัน")
@@ -202,8 +201,8 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
                 .itemsCallbackSingleChoice(-1) { dialog, itemView, which, text ->
                     localID = which
                     edt_location.setText(locations[which])
-                    setData(localID,ArrayList())
-
+                    //setData(localID,ArrayList())
+                    loadChart()
                     true
                 }
                 /*
@@ -284,7 +283,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         xAxis.textColor = Color.BLACK
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawAxisLine(true)
-        xAxis.axisMaximum =300f
+        //xAxis.axisMaximum =365f
         xAxis.axisMinimum =0f
         xAxis.setLabelCount(13,true)
         /*
@@ -306,7 +305,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         val leftAxis = mChart.axisLeft
         leftAxis.removeAllLimitLines() // reset all limit lines to avoid overlapping lines
         leftAxis.textColor = Color.BLACK
-        leftAxis.axisMaximum = 300f
+        //leftAxis.axisMaximum = 365f
         leftAxis.axisMinimum =0f
         leftAxis.setLabelCount(13,true)
         //leftAxis.yOffset = 25f
@@ -518,6 +517,9 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
             //data.setDrawValues(true)
             // set data
             mChart.data = data
+            data.notifyDataChanged() // let the data know a dataSet changed
+            mChart.notifyDataSetChanged() // let the chart know it's data changed
+            mChart.invalidate() // refresh
         }
     }
 
