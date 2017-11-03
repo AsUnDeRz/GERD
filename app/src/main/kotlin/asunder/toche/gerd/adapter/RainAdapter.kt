@@ -1,6 +1,8 @@
 package adapter
 
 import android.content.Context
+import android.content.DialogInterface
+import android.os.Handler
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -16,6 +18,7 @@ import android.widget.TextView
 import asunder.toche.gerd.*
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.ajalt.timberkt.d
+import com.github.ybq.android.spinkit.style.FadingCircle
 import java.util.*
 
 
@@ -112,8 +115,13 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String) : RecyclerV
                         }
                     }
                     d{"Check size after update =${appDb.getRainList(limit).size}"}
-                    dialog.dismiss()
-                    ActivityRain.viewPager.setCurrentItem(0,true)
+                    RainFragment2.proLoad.visibility = View.VISIBLE
+                    RainFragment1.loadChart(context)
+                    Handler().postDelayed({
+                        dialog.dismiss()
+                        ActivityRain.viewPager.setCurrentItem(0,true)
+                        RainFragment2.proLoad.visibility = View.GONE
+                    },3000)
                 }
                 .show()
     }

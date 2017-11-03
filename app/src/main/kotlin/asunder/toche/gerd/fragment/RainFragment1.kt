@@ -1,6 +1,7 @@
 package asunder.toche.gerd
 
 import adapter.RainAdapter
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -72,12 +73,199 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         fun newInstance():RainFragment1 {
             return RainFragment1()
         }
+
+        fun loadChart(context: Context){
+            val data = RainFragment2.adapter.data
+            data.sortByDescending { it.date }
+            Utils.CalRainFall(dataR,data)
+            setData(localID,data,context)
+        }
+
+        fun setData(localID:Int,rawList:MutableList<Model.Rain>,activity:Context) {
+            dataR  = ArrayList()
+            when(localID){
+                0 -> dataR = NorthRain
+                1 -> dataR = SouthRain
+                2 -> dataR = EastRain
+                3 -> dataR = WestRain
+                4 -> dataR = NorthEastRain
+
+            }
+
+            val red = ArrayList<Entry>()
+            val yellow = ArrayList<Entry>()
+            val rawData = ArrayList<Entry>()
+            val lastPosition = ArrayList<Entry>()
+            val dataSets = ArrayList<ILineDataSet>()
+            val setRed: LineDataSet
+            val setYellow : LineDataSet
+            val setRawData :LineDataSet
+            val lastData :LineDataSet
+
+
+            red.add(Entry(dataR[0].x,dataR[0].y))
+            red.add(Entry(dataR[1].x,dataR[1].y))
+            yellow.add(Entry(dataR[2].x,dataR[2].y))
+            yellow.add(Entry(dataR[3].x,dataR[3].y))
+
+            if(rawList.size > 0) {
+                for (d in rawList){
+                    rawData.add(Entry(d.previousRain,d.currentRain))
+                }
+                lastPosition.add(Entry(rawList.first().previousRain,rawList.first().currentRain))
+            }
+            else{
+                rawData.add(Entry(0.0f,0.0f))
+                lastPosition.add(Entry(0.0f,0.0f))
+
+            }
+
+            Collections.sort(rawData, EntryXComparator())
+
+
+
+
+
+            if (mChart.data != null && mChart.data.dataSetCount > 0) {
+                setRed = mChart.data.getDataSetByIndex(0) as LineDataSet
+                setRed.values = red
+                setYellow = mChart.data.getDataSetByIndex(1) as LineDataSet
+                setYellow.values = yellow
+                setRawData = mChart.data.getDataSetByIndex(2) as LineDataSet
+                setRawData.values = rawData
+                lastData = mChart.data.getDataSetByIndex(3) as LineDataSet
+                lastData.values = lastPosition
+                mChart.data.notifyDataChanged()
+                mChart.notifyDataSetChanged()
+            } else {
+                // create a dataset and give it a type
+                setRed = LineDataSet(red,"ระดับสูง")
+                setRed.values = red
+
+                setRed.setDrawIcons(false)
+                // set the line to be drawn like this "- - - - - -"
+                //setRed.enableDashedLine(10f, 5f, 0f)
+                //setRed.enableDashedHighlightLine(10f, 5f, 0f)
+                setRed.color = ContextCompat.getColor(activity,R.color.red)
+                setRed.valueTextColor = Color.BLACK
+                setRed.circleRadius = 3f
+                setRed.setCircleColor(ContextCompat.getColor(activity,R.color.red))
+                setRed.lineWidth = 3f
+                //setRed.circleRadius = 3f
+                setRed.setDrawCircleHole(false)
+                setRed.setDrawValues(true)
+                setRed.valueTextSize = 9f
+                setRed.setDrawFilled(false)
+                setRed.formLineWidth = 1f
+                setRed.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
+                setRed.formSize = 15f
+
+                //init yellow
+                setYellow = LineDataSet(yellow,"ระดับกลาง")
+                setYellow.values = yellow
+
+                setYellow.setDrawIcons(false)
+                // set the line to be drawn like this "- - - - - -"
+                // setYellow.enableDashedLine(10f, 5f, 0f)
+                // setYellow.enableDashedHighlightLine(10f, 5f, 0f)
+                setYellow.color = ContextCompat.getColor(activity,R.color.yellow)
+                setYellow.valueTextColor = Color.BLACK
+                setYellow.circleRadius = 3f
+                setYellow.setCircleColor(ContextCompat.getColor(activity,R.color.yellow))
+                setYellow.lineWidth = 3f
+                // setYellow.circleRadius = 3f
+                setYellow.setDrawCircleHole(false)
+                setYellow.setDrawValues(false)
+                setYellow.valueTextSize = 9f
+                setYellow.setDrawFilled(false)
+                setYellow.formLineWidth = 1f
+                setYellow.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
+                setYellow.formSize = 15f
+
+                /*
+                if (Utils.getSDKInt() >= 18) {
+                    // fill drawable only supported on api level 18 and above
+                    val drawable = ContextCompat.getDrawable(this, R.drawable.fade_red)
+                    setRed.fillDrawable = drawable
+                } else {
+                    setRed.fillColor = Color.BLACK
+                }
+                */
+                //init rawList
+
+                setRawData = LineDataSet(rawData,"")
+                setRawData.values = rawData
+
+                setRawData.setDrawIcons(false)
+                // set the line to be drawn like this "- - - - - -"
+                setRawData.enableDashedLine(10f, 5f, 0f)
+                setRawData.enableDashedHighlightLine(10f, 5f, 0f)
+                setRawData.color = Color.BLACK
+                setRawData.valueTextColor = Color.BLACK
+                setRawData.circleRadius = 5f
+                setRawData.setCircleColor(Color.YELLOW)
+                setRawData.lineWidth = 1f
+                // setYellow.circleRadius = 3f
+                setRawData.setDrawCircleHole(false)
+                setRawData.setDrawValues(true)
+                setRawData.valueTextSize = 9f
+                setRawData.setDrawFilled(false)
+                setRawData.formLineWidth = 1f
+                setRawData.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
+                setRawData.formSize = 15f
+
+
+                //
+
+                lastData = LineDataSet(lastPosition,"ตำแหน่งล่าสุด")
+                lastData.values = lastPosition
+
+                lastData.setDrawIcons(false)
+                // set the line to be drawn like this "- - - - - -"
+                lastData.enableDashedLine(10f, 5f, 0f)
+                lastData.enableDashedHighlightLine(10f, 5f, 0f)
+                lastData.color = Color.BLACK
+                lastData.valueTextColor = Color.BLACK
+                lastData.circleRadius = 5f
+                lastData.setCircleColor(ContextCompat.getColor(activity,R.color.green))
+                lastData.lineWidth = 1f
+                //setRed.circleRadius = 3f
+                lastData.setDrawCircleHole(false)
+                lastData.setDrawValues(true)
+                lastData.valueTextSize = 9f
+                lastData.setDrawFilled(false)
+                lastData.formLineWidth = 1f
+                lastData.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
+                lastData.formSize = 15f
+
+
+                //set dataset
+
+                dataSets.add(setRed) // add_blue the datasets
+                dataSets.add(setYellow)
+                dataSets.add(setRawData)
+                dataSets.add(lastData)
+
+
+                // create a data object with the datasets
+                val data = LineData(dataSets)
+                //data.setValueTextSize(9f)
+                //data.setDrawValues(true)
+                // set data
+                mChart.data = data
+                data.notifyDataChanged() // let the data know a dataSet changed
+                mChart.notifyDataSetChanged() // let the chart know it's data changed
+                mChart.invalidate() // refresh
+            }
+        }
+
+        lateinit var mChart : LineChart
+        lateinit var appDb:AppDatabase
+        var dataR : MutableList<Model.valRain> = ArrayList()
+        var localID: Int =0
     }
 
-    private var localID: Int =0
-    lateinit var mChart : LineChart
-    lateinit var appDb:AppDatabase
-    var dataR : MutableList<Model.valRain> = ArrayList()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,7 +309,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         }
 
         btn_update_grap.setOnClickListener {
-           loadChart()
+           loadChart(activity)
             /*
             scrollView.fullScroll(View.FOCUS_DOWN)
             val lastChild = scrollView.getChildAt(scrollView.childCount - 1)
@@ -169,12 +357,8 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
 
     }
 
-    fun loadChart(){
-        val data = RainFragment2.adapter.data
-        data.sortByDescending { it.date }
-        Utils.CalRainFall(dataR,data)
-        setData(localID,data)
-    }
+
+
 
     fun showRain(){
         MaterialDialog.Builder(activity)
@@ -202,7 +386,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
                     localID = which
                     edt_location.setText(locations[which])
                     //setData(localID,ArrayList())
-                    loadChart()
+                    loadChart(activity)
                     true
                 }
                 /*
@@ -321,7 +505,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         //mChart.getViewPortHandler().setMaximumScaleX(2f);
 
         // add_blue data
-        setData(localID,ArrayList())
+        setData(localID,ArrayList(),activity)
 
 //        mChart.setVisibleXRange(20);
 //        mChart.setVisibleYRange(20f, AxisDependency.LEFT);
@@ -345,183 +529,9 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
     }
 
 
-    private fun setData(localID:Int,rawList:MutableList<Model.Rain>) {
-        dataR  = ArrayList()
-        when(localID){
-            0 -> dataR = NorthRain
-            1 -> dataR = SouthRain
-            2 -> dataR = EastRain
-            3 -> dataR = WestRain
-            4 -> dataR = NorthEastRain
-
-        }
-
-        val red = ArrayList<Entry>()
-        val yellow = ArrayList<Entry>()
-        val rawData = ArrayList<Entry>()
-        val lastPosition = ArrayList<Entry>()
-        val dataSets = ArrayList<ILineDataSet>()
-        val setRed: LineDataSet
-        val setYellow : LineDataSet
-        val setRawData :LineDataSet
-        val lastData :LineDataSet
-
-
-        red.add(Entry(dataR[0].x,dataR[0].y))
-        red.add(Entry(dataR[1].x,dataR[1].y))
-        yellow.add(Entry(dataR[2].x,dataR[2].y))
-        yellow.add(Entry(dataR[3].x,dataR[3].y))
-
-        if(rawList.size > 0) {
-            for (d in rawList){
-                rawData.add(Entry(d.previousRain,d.currentRain))
-            }
-            lastPosition.add(Entry(rawList.last().previousRain,rawList.last().currentRain))
-        }
-        else{
-            rawData.add(Entry(0.0f,0.0f))
-            lastPosition.add(Entry(0.0f,0.0f))
-
-        }
-
-        Collections.sort(rawData, EntryXComparator())
 
 
 
-
-
-        if (mChart.data != null && mChart.data.dataSetCount > 0) {
-            setRed = mChart.data.getDataSetByIndex(0) as LineDataSet
-            setRed.values = red
-            setYellow = mChart.data.getDataSetByIndex(1) as LineDataSet
-            setYellow.values = yellow
-            setRawData = mChart.data.getDataSetByIndex(2) as LineDataSet
-            setRawData.values = rawData
-            lastData = mChart.data.getDataSetByIndex(3) as LineDataSet
-            lastData.values = lastPosition
-            mChart.data.notifyDataChanged()
-            mChart.notifyDataSetChanged()
-        } else {
-            // create a dataset and give it a type
-            setRed = LineDataSet(red,"ระดับสูง")
-            setRed.values = red
-
-            setRed.setDrawIcons(false)
-            // set the line to be drawn like this "- - - - - -"
-            //setRed.enableDashedLine(10f, 5f, 0f)
-            //setRed.enableDashedHighlightLine(10f, 5f, 0f)
-            setRed.color = ContextCompat.getColor(activity,R.color.red)
-            setRed.valueTextColor = Color.BLACK
-            setRed.circleRadius = 3f
-            setRed.setCircleColor(ContextCompat.getColor(activity,R.color.red))
-            setRed.lineWidth = 3f
-            //setRed.circleRadius = 3f
-            setRed.setDrawCircleHole(false)
-            setRed.setDrawValues(true)
-            setRed.valueTextSize = 9f
-            setRed.setDrawFilled(false)
-            setRed.formLineWidth = 1f
-            setRed.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
-            setRed.formSize = 15f
-
-            //init yellow
-            setYellow = LineDataSet(yellow,"ระดับกลาง")
-            setYellow.values = yellow
-
-            setYellow.setDrawIcons(false)
-            // set the line to be drawn like this "- - - - - -"
-            // setYellow.enableDashedLine(10f, 5f, 0f)
-            // setYellow.enableDashedHighlightLine(10f, 5f, 0f)
-            setYellow.color = ContextCompat.getColor(activity,R.color.yellow)
-            setYellow.valueTextColor = Color.BLACK
-            setYellow.circleRadius = 3f
-            setYellow.setCircleColor(ContextCompat.getColor(activity,R.color.yellow))
-            setYellow.lineWidth = 3f
-            // setYellow.circleRadius = 3f
-            setYellow.setDrawCircleHole(false)
-            setYellow.setDrawValues(false)
-            setYellow.valueTextSize = 9f
-            setYellow.setDrawFilled(false)
-            setYellow.formLineWidth = 1f
-            setYellow.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
-            setYellow.formSize = 15f
-
-            /*
-            if (Utils.getSDKInt() >= 18) {
-                // fill drawable only supported on api level 18 and above
-                val drawable = ContextCompat.getDrawable(this, R.drawable.fade_red)
-                setRed.fillDrawable = drawable
-            } else {
-                setRed.fillColor = Color.BLACK
-            }
-            */
-                //init rawList
-
-                setRawData = LineDataSet(rawData,"")
-                setRawData.values = rawData
-
-                setRawData.setDrawIcons(false)
-                // set the line to be drawn like this "- - - - - -"
-                setRawData.enableDashedLine(10f, 5f, 0f)
-                setRawData.enableDashedHighlightLine(10f, 5f, 0f)
-                setRawData.color = Color.BLACK
-                setRawData.valueTextColor = Color.BLACK
-                setRawData.circleRadius = 5f
-                setRawData.setCircleColor(Color.YELLOW)
-                setRawData.lineWidth = 1f
-                // setYellow.circleRadius = 3f
-                setRawData.setDrawCircleHole(false)
-                setRawData.setDrawValues(true)
-                setRawData.valueTextSize = 9f
-                setRawData.setDrawFilled(false)
-                setRawData.formLineWidth = 1f
-                setRawData.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
-                setRawData.formSize = 15f
-
-
-                //
-
-                lastData = LineDataSet(lastPosition,"ตำแหน่งล่าสุด")
-                lastData.values = lastPosition
-
-                lastData.setDrawIcons(false)
-                // set the line to be drawn like this "- - - - - -"
-                lastData.enableDashedLine(10f, 5f, 0f)
-                lastData.enableDashedHighlightLine(10f, 5f, 0f)
-                lastData.color = Color.BLACK
-                lastData.valueTextColor = Color.BLACK
-                lastData.circleRadius = 5f
-                lastData.setCircleColor(ContextCompat.getColor(activity,R.color.green))
-                lastData.lineWidth = 1f
-                //setRed.circleRadius = 3f
-                lastData.setDrawCircleHole(false)
-                lastData.setDrawValues(true)
-                lastData.valueTextSize = 9f
-                lastData.setDrawFilled(false)
-                lastData.formLineWidth = 1f
-                lastData.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
-                lastData.formSize = 15f
-
-
-                //set dataset
-
-            dataSets.add(setRed) // add_blue the datasets
-            dataSets.add(setYellow)
-            dataSets.add(setRawData)
-            dataSets.add(lastData)
-
-
-            // create a data object with the datasets
-            val data = LineData(dataSets)
-            //data.setValueTextSize(9f)
-            //data.setDrawValues(true)
-            // set data
-            mChart.data = data
-            data.notifyDataChanged() // let the data know a dataSet changed
-            mChart.notifyDataSetChanged() // let the chart know it's data changed
-            mChart.invalidate() // refresh
-        }
-    }
 
 
 }

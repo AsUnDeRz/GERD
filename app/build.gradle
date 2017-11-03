@@ -11,8 +11,8 @@ android {
         applicationId "asunder.toche.gerd"
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -64,6 +64,7 @@ dependencies {
     //
     implementation 'de.codecrafters.tableview:tableview:2.8.0'
     implementation project(':Adaptive')
+    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
 }
 
 

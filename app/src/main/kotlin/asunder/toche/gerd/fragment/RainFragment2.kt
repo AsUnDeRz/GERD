@@ -9,8 +9,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import asunder.toche.gerd.Utils.initRain
 import com.github.ajalt.timberkt.Timber.d
+import com.github.ybq.android.spinkit.style.FadingCircle
 import kotlinx.android.synthetic.main.activity_rain.*
 import kotlinx.android.synthetic.main.fragment_rain2.*
 import java.util.*
@@ -31,6 +34,11 @@ class RainFragment2:Fragment(){
         lateinit var rvDate :RecyclerView
         lateinit var adapter:RainAdapter
 
+        @SuppressLint("StaticFieldLeak")
+        lateinit var proLoad:RelativeLayout
+        @SuppressLint("StaticFieldLeak")
+        lateinit var load:ProgressBar
+
     }
     lateinit var appDb:AppDatabase
 
@@ -50,7 +58,10 @@ class RainFragment2:Fragment(){
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        proLoad = view!!.findViewById(R.id.root_load2)
+        load = view.findViewById(R.id.pro_load2)
+        val fad = FadingCircle()
+        load.indeterminateDrawable =fad
         rvDate.layoutManager = LinearLayoutManager(activity)
         rvDate.hasFixedSize()
         rvDate.adapter = adapter
