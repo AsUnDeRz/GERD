@@ -1,7 +1,6 @@
 package asunder.toche.gerd
 
 import adapter.RainAdapter
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -22,29 +21,59 @@ import asunder.toche.gerd.Data.WestRain
 import asunder.toche.gerd.Data.locations
 import asunder.toche.gerd.Data.totalRain
 import com.afollestad.materialdialogs.MaterialDialog
-import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout
 import com.cleveroad.adaptivetablelayout.OnItemClickListener
 import com.cleveroad.adaptivetablelayout.OnItemLongClickListener
 import com.github.ajalt.timberkt.Timber.d
-import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.CombinedChart
+import com.github.mikephil.charting.charts.ScatterChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet
 import com.github.mikephil.charting.utils.EntryXComparator
+import com.layernet.thaidatetimepicker.date.DatePickerDialog
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import kotlinx.android.synthetic.main.fragment_rain1.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
  * Created by ToCHe on 10/23/2017 AD.
  */
-class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
+class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
+        com.layernet.thaidatetimepicker.date.DatePickerDialog.OnDateSetListener{
+    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        edt_date.setText("$dayOfMonth/"+(monthOfYear+1)+"/${year+543}")
+        var haveDay= false
+        val max = Calendar.getInstance()
+        max.set(year,monthOfYear,dayOfMonth,7,0,0)
+        pickDate = max.time
+        //max.add(Calendar.DATE,0)
+        val test = Utils.initPrevious(edt_date_back.text.toString().toInt(), pickDate)
+        test.forEach {
+            d{"initPrevious $it"}
+        }
+        val testDb = appDb.getRainPrevious(edt_date_back.text.toString(), pickDate)
+        testDb.forEach {
+            d{"db $it"}
+        }
+        val dateData = Utils.synchronizeData(testDb,test)
+        dateData.forEach {
+            d{"after sync $it"}
+        }
+        dateData.sortByDescending { it.date }
+        RainFragment2.adapter = RainAdapter(dateData,edt_date_back.text.toString(), pickDate)
+        RainFragment2.rvDate.adapter = RainFragment2.adapter
+        viewPager.setCurrentItem(1,true)
+    }
+
+    fun CheckDateDiff(pickDate:Date){
+
+
+    }
+
     override fun onColumnHeaderClick(column: Int) {
             d {"onColumnHeaderClick $column"}
     }
@@ -96,11 +125,11 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
             val yellow = ArrayList<Entry>()
             val rawData = ArrayList<Entry>()
             val lastPosition = ArrayList<Entry>()
-            val dataSets = ArrayList<ILineDataSet>()
+            val dataSets = CombinedData()
             val setRed: LineDataSet
             val setYellow : LineDataSet
-            val setRawData :LineDataSet
-            val lastData :LineDataSet
+            val setRawData :ScatterDataSet
+            val lastData : ScatterDataSet
 
 
             red.add(Entry(dataR[0].x,dataR[0].y))
@@ -112,6 +141,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
                 for (d in rawList){
                     rawData.add(Entry(d.previousRain,d.currentRain))
                 }
+                rawData.removeAt(0)
                 lastPosition.add(Entry(rawList.first().previousRain,rawList.first().currentRain))
             }
             else{
@@ -131,9 +161,9 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
                 setRed.values = red
                 setYellow = mChart.data.getDataSetByIndex(1) as LineDataSet
                 setYellow.values = yellow
-                setRawData = mChart.data.getDataSetByIndex(2) as LineDataSet
+                setRawData = mChart.data.getDataSetByIndex(2) as ScatterDataSet
                 setRawData.values = rawData
-                lastData = mChart.data.getDataSetByIndex(3) as LineDataSet
+                lastData = mChart.data.getDataSetByIndex(3) as ScatterDataSet
                 lastData.values = lastPosition
                 mChart.data.notifyDataChanged()
                 mChart.notifyDataSetChanged()
@@ -182,87 +212,57 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
                 setYellow.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
                 setYellow.formSize = 15f
 
-                /*
-                if (Utils.getSDKInt() >= 18) {
-                    // fill drawable only supported on api level 18 and above
-                    val drawable = ContextCompat.getDrawable(this, R.drawable.fade_red)
-                    setRed.fillDrawable = drawable
-                } else {
-                    setRed.fillColor = Color.BLACK
-                }
-                */
+
+
                 //init rawList
-
-                setRawData = LineDataSet(rawData,"")
+                setRawData = ScatterDataSet(rawData,"")
                 setRawData.values = rawData
-
+                setRawData.setScatterShape(ScatterChart.ScatterShape.SQUARE)
                 setRawData.setDrawIcons(false)
-                // set the line to be drawn like this "- - - - - -"
-                setRawData.enableDashedLine(10f, 5f, 0f)
-                setRawData.enableDashedHighlightLine(10f, 5f, 0f)
-                setRawData.color = Color.BLACK
+                setRawData.color = ContextCompat.getColor(activity,R.color.bluePlot)
                 setRawData.valueTextColor = Color.BLACK
-                setRawData.circleRadius = 5f
-                setRawData.setCircleColor(Color.YELLOW)
-                setRawData.lineWidth = 1f
-                // setYellow.circleRadius = 3f
-                setRawData.setDrawCircleHole(false)
                 setRawData.setDrawValues(true)
                 setRawData.valueTextSize = 9f
-                setRawData.setDrawFilled(false)
-                setRawData.formLineWidth = 1f
-                setRawData.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
                 setRawData.formSize = 15f
 
 
                 //
 
-                lastData = LineDataSet(lastPosition,"ตำแหน่งล่าสุด")
+                lastData = ScatterDataSet(lastPosition,"ตำแหน่งล่าสุด")
                 lastData.values = lastPosition
-
+                lastData.setScatterShape(ScatterChart.ScatterShape.CIRCLE)
                 lastData.setDrawIcons(false)
-                // set the line to be drawn like this "- - - - - -"
-                lastData.enableDashedLine(10f, 5f, 0f)
-                lastData.enableDashedHighlightLine(10f, 5f, 0f)
-                lastData.color = Color.BLACK
+                lastData.color = ContextCompat.getColor(activity,R.color.green)
                 lastData.valueTextColor = Color.BLACK
-                lastData.circleRadius = 5f
-                lastData.setCircleColor(ContextCompat.getColor(activity,R.color.green))
-                lastData.lineWidth = 1f
-                //setRed.circleRadius = 3f
-                lastData.setDrawCircleHole(false)
                 lastData.setDrawValues(true)
                 lastData.valueTextSize = 9f
-                lastData.setDrawFilled(false)
-                lastData.formLineWidth = 1f
-                lastData.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
                 lastData.formSize = 15f
 
 
-                //set dataset
-
-                dataSets.add(setRed) // add_blue the datasets
-                dataSets.add(setYellow)
-                dataSets.add(setRawData)
-                dataSets.add(lastData)
-
-
                 // create a data object with the datasets
-                val data = LineData(dataSets)
-                //data.setValueTextSize(9f)
-                //data.setDrawValues(true)
+                val lineSet = ArrayList<ILineDataSet>()
+                lineSet.add(setRed)
+                lineSet.add(setYellow)
+                val lineData = LineData(lineSet)
+                val scatSet = ArrayList<IScatterDataSet>()
+                scatSet.add(setRawData)
+                scatSet.add(lastData)
+                val scatData = ScatterData(scatSet)
+
                 // set data
-                mChart.data = data
-                data.notifyDataChanged() // let the data know a dataSet changed
+                dataSets.setData(lineData)
+                dataSets.setData(scatData)
+                mChart.data = dataSets
                 mChart.notifyDataSetChanged() // let the chart know it's data changed
                 mChart.invalidate() // refresh
             }
         }
 
-        lateinit var mChart : LineChart
+        lateinit var mChart : CombinedChart
         lateinit var appDb:AppDatabase
         var dataR : MutableList<Model.valRain> = ArrayList()
         var localID: Int =0
+        var pickDate=Date()
     }
 
 
@@ -285,12 +285,14 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        calendar.set(calendar.get(Calendar.YEAR)+543,calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),7,0,0)
+        pickDate = Utils.getDateWithFormat(Date())
         edt_date_back.setText("30")
         spinner.setText("3")
         edt_location.setText(locations[localID])
-        edt_date.setText(Utils.getDateSlash(Date()))
+        edt_date.setText(Utils.getDateSlash(calendar.time))
         viewRoot.inflate()
         initGraph(view!!)
 
@@ -302,7 +304,8 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         PushDown.setOnTouchPushDown(btn_update_list)
         btn_update_list.setOnClickListener {
             //cal database
-            RainFragment2.adapter = RainAdapter(Utils.synchronizeData(appDb,edt_date_back.text.toString()),edt_date_back.text.toString())
+            RainFragment2.adapter = RainAdapter(Utils.synchronizeData(appDb.getRainPrevious("30", pickDate),
+                    Utils.initPrevious(edt_date_back.text.toString().toInt(), pickDate)),edt_date_back.text.toString(), pickDate)
             RainFragment2.rvDate.adapter = RainFragment2.adapter
             viewPager.setCurrentItem(1,true)
 
@@ -343,7 +346,8 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         edt_date.setOnClickListener { view ->
             val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
-            showSpinner()
+            //showSpinner()
+            showDateThai()
         }
         edt_date.isFocusableInTouchMode = false
         edt_date.isFocusable =false
@@ -382,20 +386,16 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
         MaterialDialog.Builder(activity)
                 .title("ภูมิภาค")
                 .items(locations)
-                .itemsCallbackSingleChoice(-1) { dialog, itemView, which, text ->
+                .itemsCallbackSingleChoice(localID) { dialog, itemView, which, text ->
                     localID = which
                     edt_location.setText(locations[which])
                     //setData(localID,ArrayList())
                     loadChart(activity)
                     true
                 }
-                /*
-                .itemsCallback({ dialog, view, which, text ->
-                    spinner.setText(text)
-                })
-                */
                 .positiveText("ยืนยัน")
-                .show()
+               .show()
+
     }
 
     fun showSpinner(){
@@ -414,6 +414,22 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
                 .dayOfMonth(dOfm)
                 .build()
                 .show()
+    }
+
+    fun showDateThai(){
+        val max = Calendar.getInstance()
+        val min = Calendar.getInstance()
+        max.set(max.get(Calendar.YEAR),max.get(Calendar.MONTH),max.get(Calendar.DAY_OF_MONTH),7,0,0)
+        min.set(max.get(Calendar.YEAR),max.get(Calendar.MONTH),max.get(Calendar.DAY_OF_MONTH),7,0,0)
+        val mount = max.get(Calendar.MONTH)
+        val dOfm = max.get(Calendar.DAY_OF_MONTH)
+        val year = max.get(Calendar.YEAR)
+        val datePopup = com.layernet.thaidatetimepicker.date.DatePickerDialog.newInstance(this, year, mount, dOfm)
+        max.add(Calendar.DATE,1)
+        datePopup.maxDate = max
+        min.add(Calendar.DATE,-30)
+        datePopup.minDate = min
+        datePopup.show(activity.fragmentManager,"datepicker")
     }
 
 
@@ -506,10 +522,6 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener{
 
         // add_blue data
         setData(localID,ArrayList(),activity)
-
-//        mChart.setVisibleXRange(20);
-//        mChart.setVisibleYRange(20f, AxisDependency.LEFT);
-//        mChart.centerViewTo(20, 50, AxisDependency.LEFT);
 
         mChart.animateX(2500)
         //mChart.invalidate()

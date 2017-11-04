@@ -87,6 +87,7 @@
                         android:layout_toEndOf="@id/txt_date"
                         android:gravity="center"
                         android:inputType="text"
+                        android:nextFocusDown="@id/edt_date_back"
                         android:text="22/10/2560" />
 
                     <TextView
@@ -109,6 +110,7 @@
                         android:inputType="number"
                         android:maxLength="3"
                         android:maxLines="1"
+                        android:nextFocusDown="@id/edt_location"
                         android:text="2"></EditText>
 
                     <TextView

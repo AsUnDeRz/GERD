@@ -43,7 +43,7 @@
           </option>
           <option name="pluginClasspaths">
             <array>
-              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-android-extensions/1.2.0-beta-88/aeeff0945380dae14e21948a71e8fdeae09ef8ff/kotlin-android-extensions-1.2.0-beta-88.jar" />
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-android-extensions/1.2.0-rc-39/47b70a5be4912edf5b46ce5827aeadb6a9710ed7/kotlin-android-extensions-1.2.0-rc-39.jar" />
             </array>
           </option>
         </compilerArguments>
@@ -158,7 +158,6 @@
     <orderEntry type="library" name="com.android.support:support-fragment-26.1.0" level="project" />
     <orderEntry type="library" name="com.github.chrisbanes:PhotoView-2.1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="javax.inject:javax.inject:1@jar" level="project" />
-    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2-M2@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="com.squareup:javawriter:2.1.1@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-vector-drawable-26.1.0" level="project" />
     <orderEntry type="library" name="android.arch.lifecycle:runtime-1.0.0" level="project" />
@@ -166,9 +165,11 @@
     <orderEntry type="library" name="com.android.support:support-annotations:26.1.0@jar" level="project" />
     <orderEntry type="library" name="com.github.bumptech.glide:glide:3.8.0@jar" level="project" />
     <orderEntry type="library" name="com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
+    <orderEntry type="library" name="com.layer-net:thai-datetimepicker-1.0.3" level="project" />
     <orderEntry type="library" name="com.android.support:support-core-utils-26.1.0" level="project" />
     <orderEntry type="library" name="com.android.support.constraint:constraint-layout-1.0.2" level="project" />
     <orderEntry type="library" name="com.android.support:support-core-ui-26.1.0" level="project" />
+    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib:1.2.0-rc-39@jar" level="project" />
     <orderEntry type="library" name="me.zhanghai.android.materialprogressbar:library-1.4.1" level="project" />
     <orderEntry type="library" scope="TEST" name="com.android.support.test:runner-1.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="com.android.support.test:rules-1.0.1" level="project" />
@@ -178,11 +179,11 @@
     <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-core:1.3@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-compat-26.1.0" level="project" />
     <orderEntry type="library" name="com.synnapps:carouselview-0.1.4" level="project" />
+    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.0-rc-39@jar" level="project" />
     <orderEntry type="library" name="android.arch.core:common:1.0.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-library:1.3@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-integration:1.3@jar" level="project" />
     <orderEntry type="library" name="com.android.support:customtabs-26.1.0" level="project" />
-    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib:1.2-M2@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-v4-26.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="net.sf.kxml:kxml2:2.3.0@jar" level="project" />
     <orderEntry type="library" name="org.jetbrains:annotations:13.0@jar" level="project" />
@@ -193,8 +194,8 @@
     <orderEntry type="library" name="com.android.support:transition-26.1.0" level="project" />
     <orderEntry type="library" name="com.android.support:design-26.1.0" level="project" />
     <orderEntry type="library" name="com.github.PhilJay:MPAndroidChart:v3.0.2@jar" level="project" />
+    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2.0-rc-39@jar" level="project" />
     <orderEntry type="library" name="com.android.support:cardview-v7-26.1.0" level="project" />
-    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2-M2@jar" level="project" />
     <orderEntry type="module" module-name="Adaptive" />
     <orderEntry type="module" module-name="SpinnerDatePicker" />
   </component>

@@ -45,7 +45,8 @@ class RainFragment2:Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appDb = AppDatabase(context)
-        adapter = RainAdapter(Utils.synchronizeData(appDb,"30"), "30")
+        adapter = RainAdapter(Utils.synchronizeData(appDb.getRainPrevious("30",Utils.getDateWithFormat(Date())),
+                Utils.initRain(30)), "30",Utils.getDateWithFormat(Date()))
 
 
     }

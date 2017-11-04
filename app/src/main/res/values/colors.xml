@@ -10,6 +10,7 @@
     <color name="grey">#bbbbbb</color>
     <color name="greenLine">#00CC00</color>
 
+    <color name="bluePlot">#5A9AD7</color>
     <color name="charcoal">#c8ffffff</color>
     <color name="medium_jungle_green">#FF273238</color>
 </resources>

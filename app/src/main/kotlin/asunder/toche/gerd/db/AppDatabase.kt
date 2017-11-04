@@ -18,6 +18,8 @@ class AppDatabase(internal var myCon: Context) : SQLiteOpenHelper(myCon, DATABAS
 
     internal var cursor: SQLiteCursor? = null
     internal lateinit var sqlDb: SQLiteDatabase
+    fun date2Db(date:Long):String = date.toString().substring(0,10)+"000"
+
 
     fun open(): AppDatabase {
 
@@ -51,31 +53,62 @@ class AppDatabase(internal var myCon: Context) : SQLiteOpenHelper(myCon, DATABAS
     fun addRain(currentRain:Float,date:Long) {
         // Create and/or open the database for writing
         val db = writableDatabase
-
         // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
         // consistency of the database.
+        d{date2Db(date)}
         db.beginTransaction()
         try {
             val values = ContentValues()
-            values.put(KEY_RAIN_DATE, date.toString())
+            values.put(KEY_RAIN_DATE, date2Db(date))
             values.put(KEY_RAIN_CURRENT, currentRain)
 
             // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
             db.insertOrThrow(TABLE_RAIN, null, values)
             db.setTransactionSuccessful()
         } catch (e: Exception) {
-            Timber.d { "Error while trying to add login to database" }
+            Timber.d { "Error while trying to database" }
         } finally {
             db.endTransaction()
             db.close()
         }
     }
 
+    fun getRainWithDate(date: Long):Model.Rain{
+        val rain = Model.Rain()
+        rain.date = Date((date2Db(date)).toLong())
+        // Select All Query
+        val selectQuery = "SELECT  * FROM $TABLE_RAIN WHERE $KEY_RAIN_DATE = ${date2Db(date)}"
+
+        val db = writableDatabase
+        val cursor = db.rawQuery(selectQuery, null)
+
+        // looping through all rows and adding to list
+        try{
+            if (cursor.moveToFirst()) {
+                    rain.id = cursor.getInt(0)
+                    rain.date = Date(cursor.getLong(1))
+                    rain.currentRain = cursor.getFloat(2)
+                    rain.previousRain = 0.0f
+                    rain.status =Model.StatusRain.LOW
+            }
+
+        } catch (e: Exception) {
+            Timber.d { "Error while trying to get posts from database" }
+        } finally {
+            if (cursor != null && !cursor.isClosed) {
+                cursor.close()
+            }
+            db.close()
+        }
+        // return contact list
+        d{"return rain $rain"}
+        return rain
+    }
 
     fun updateRain(rain:Model.Rain){
         val db = writableDatabase
         val values = ContentValues()
-        values.put(KEY_RAIN_DATE, rain.date.time.toString())
+        values.put(KEY_RAIN_DATE, date2Db(rain.date.time))
         values.put(KEY_RAIN_CURRENT, rain.currentRain)
 
         d { "update rain with id [" + rain.id + "] current ["+rain.currentRain+"]" }
@@ -89,6 +122,43 @@ class AppDatabase(internal var myCon: Context) : SQLiteOpenHelper(myCon, DATABAS
         Timber.d { "Delete Rain with id[$id]" }
         db.delete(TABLE_RAIN, KEY_RAIN_ID + " = ?", arrayOf(id))
         db.close()
+    }
+
+    fun getRainPrevious(limit: String,pickDate:Date):MutableList<Model.Rain>{
+        val rainList = ArrayList<Model.Rain>()
+        // Select All Query
+        val conditionDate =date2Db(pickDate.time)
+        val selectQuery = "SELECT  * FROM $TABLE_RAIN WHERE $KEY_RAIN_DATE <= $conditionDate ORDER BY $KEY_RAIN_DATE DESC LIMIT $limit"
+
+        d{conditionDate}
+        val db = writableDatabase
+        val cursor = db.rawQuery(selectQuery, null)
+
+        // looping through all rows and adding to list
+        try{
+            if (cursor.moveToFirst()) {
+                do {
+                    rainList.apply {
+                        d{cursor.getLong(1).toString()+" Date = "+Date(cursor.getLong(1))}
+                        add(Model.Rain(
+                                cursor.getInt(0),
+                                Date(cursor.getLong(1)),
+                                cursor.getFloat(2),
+                                0.0f,Model.StatusRain.LOW))
+                    }
+                } while (cursor.moveToNext())
+            }
+
+        } catch (e: Exception) {
+            Timber.d { "Error while trying to get posts from database" }
+        } finally {
+            if (cursor != null && !cursor.isClosed) {
+                cursor.close()
+            }
+            db.close()
+        }
+        // return contact list
+        return rainList
     }
     fun getRainList(limit:String) : MutableList<Model.Rain>{
         val rainList = ArrayList<Model.Rain>()

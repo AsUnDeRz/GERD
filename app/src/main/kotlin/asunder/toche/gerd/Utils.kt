@@ -14,7 +14,7 @@ import kotlin.collections.ArrayList
 object Utils {
 
     fun getDateSlash(date: Date):String{
-        val fmtOut = SimpleDateFormat("dd/MM/yyyy")
+        val fmtOut = SimpleDateFormat("dd/MM/yyyy",Locale("th"))
         return fmtOut.format(date)
     }
 
@@ -24,6 +24,17 @@ object Utils {
         calendar.add(Calendar.DATE, -1)
         return getDateSlash(calendar.time)
     }
+
+    fun getDateWithFormat(date: Date):Date{
+        val c = Calendar.getInstance()
+        c.time = date
+        c.set(c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH),7,0,0)
+        return c.time
+    }
+
+    fun date2Db(date:Long):String = date.toString().substring(0,10)+"000"
+
+
 
 
 
@@ -53,7 +64,6 @@ object Utils {
         //init condition by region
         val eq = CalEq(r)
 
-
         //cal and add previous 3 day rain
         for( i in 0 until data.lastIndex){
             val iStart = i +1
@@ -63,14 +73,25 @@ object Utils {
                     .sum()
 
             data[i].previousRain = previous
-            d{"Previous rain [$previous] by Date ["+data[i]+"]"}
-
-
             val statusRain = FilterStatusRain(data[i],eq,r)
-
-            d{"Status Rain return $statusRain"}
+            d{"Previous rain [$previous] by Date ["+data[i]+"] Status Rain return $statusRain"}
             data[i].status = statusRain
         }
+    }
+
+    fun initPrevious(size: Int,pickDate:Date):MutableList<Model.Rain>{
+        var data: MutableList<Model.Rain> = ArrayList()
+
+        for(i in -size until 1){
+            val c = Calendar.getInstance()
+            c.time = pickDate
+            c.set(c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH),7,0,0)
+            c.add(Calendar.DATE,i)
+            data.add(Model.Rain(0,c.time,0.0f,0.0f,Model.StatusRain.LOW))
+        }
+        data.removeAt(0)
+        data.sortByDescending { it.date }
+        return data
     }
 
     fun initRain(size:Int):MutableList<Model.Rain>{
@@ -83,7 +104,11 @@ object Utils {
             data.add(Model.Rain(0,calendar.time,0.0f,0.0f,Model.StatusRain.LOW))
         }
         data.removeAt(0)
-        data.add(Model.Rain(0,Date(),0.0f,0.0f,Model.StatusRain.LOW))
+
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),7,0,0)
+        data.add(Model.Rain(0,calendar.time,0.0f,0.0f,Model.StatusRain.LOW))
 
         /*
         String sDate = "31012014";
@@ -112,39 +137,57 @@ String yesterdayAsString = dateFormat.format(calendar.getTime());
         }
     }
 
-    fun compareData(appDb:AppDatabase,dataNew:MutableList<Model.Rain>,limit:String){
-        var dataInDb = appDb.getRainList(limit)
+    fun compareData(appDb:AppDatabase,dataNew:MutableList<Model.Rain>,limit:String,pickDate: Date){
+        var dataInDb = appDb.getRainPrevious(limit,pickDate)
         dataNew.forEach {
             d{"Data New "+it.toString()}
         }
         dataInDb.sortBy { it.date }
-        for(a in dataInDb){
-            //update rain when map date but values is dif
-            dataNew.filter { Utils.getDateSlash(it.date) == Utils.getDateSlash(a.date) }
-                    .forEach {
-                        if(it.currentRain != a.currentRain){
-                            d{"Update current rain in db"}
-                            appDb.updateRain(Model.Rain(a.id,it.date,it.currentRain,0.0f,Model.StatusRain.LOW))
-                        }
-                    }
-           // d{"Check size dataNew ${dataNew.size}"}
+        dataInDb.forEach {
+            d{"Data Origin "+it.toString()}
         }
 
-        //filter new date
-        dataNew.filter { dataInDb[dataInDb.lastIndex].date.time < it.date.time }
-                .forEach {
-                    d{"have newDate more one"}
-                    d{Utils.getDateSlash(it.date)}
-                    //add to database
-                    appDb.addRain(it.currentRain,it.date.time)
-                }
-    }
+        dataNew.forEach { new ->
+            dataInDb.filter { Utils.getDateSlash(it.date) == Utils.getDateSlash(new.date) }
+                    .forEach {
+                        if(it.currentRain != new.currentRain && new.currentRain != 0.0f){
+                            d{"Update current rain in db"}
+                            appDb.updateRain(Model.Rain(it.id,it.date,new.currentRain,0.0f,Model.StatusRain.LOW))
+                        }
+                    }
 
-    fun synchronizeData(appDb: AppDatabase,limit: String):MutableList<Model.Rain> {
-        var rawData = appDb.getRainList("30")
-        var newData = initRain(limit.toInt())
+        }
+
+        val lastIndex = dataInDb[dataInDb.lastIndex].date
+        val firstIndex = dataInDb[0].date
+        val futureDate =dataNew.filter { it.date.time > lastIndex.time }
+        val pastDate = dataNew.filter { it.date.time < firstIndex.time }
+        futureDate.forEach {
+            if(Utils.getDateSlash(appDb.getRainWithDate(it.date.time).date) != Utils.getDateSlash(lastIndex)){
+                d{"not match data in db"}
+                appDb.addRain(it.currentRain,it.date.time)
+            }
+        }
+        pastDate.forEach {
+            if(Utils.getDateSlash(appDb.getRainWithDate(it.date.time).date) != Utils.getDateSlash(firstIndex)){
+                d{"not match data in db"}
+                appDb.addRain(it.currentRain,it.date.time)
+            }
+        }
+        }
+
+
+    fun synchronizeData(raw:MutableList<Model.Rain>,data:MutableList<Model.Rain>):MutableList<Model.Rain> {
+        var rawData = raw
+        var newData = data
 
         d{"Check rawData size ${rawData.size} newData size ${newData.size}"}
+        rawData.forEach {
+            d{"raw Data $it"}
+        }
+        newData.forEach {
+            d{"new Data $it"}
+        }
         if(rawData.size > 0){
             for(raw in rawData){
                 newData.filter { Utils.getDateSlash(it.date) == Utils.getDateSlash(raw.date) }

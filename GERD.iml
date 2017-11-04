@@ -51,9 +51,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" scope="PROVIDED" name="kotlin-stdlib-jre8-1.2-M2" level="project" />
-    <orderEntry type="library" exported="" scope="PROVIDED" name="kotlin-stdlib-jre7-1.2-M2" level="project" />
-    <orderEntry type="library" exported="" scope="PROVIDED" name="kotlin-stdlib-1.2-M2" level="project" />
+    <orderEntry type="library" exported="" scope="PROVIDED" name="kotlin-stdlib-jre8-1.2.0-rc-39" level="project" />
+    <orderEntry type="library" exported="" scope="PROVIDED" name="kotlin-stdlib-jre7-1.2.0-rc-39" level="project" />
+    <orderEntry type="library" exported="" scope="PROVIDED" name="kotlin-stdlib-1.2.0-rc-39" level="project" />
     <orderEntry type="library" exported="" scope="PROVIDED" name="annotations-13.0" level="project" />
   </component>
 </module>

@@ -25,7 +25,7 @@ import java.util.*
 /**
  * Created by ToCHe on 10/26/2017 AD.
  */
-class RainAdapter(var data:MutableList<Model.Rain>,var limit:String) : RecyclerView.Adapter<RainAdapter.RainHolder>(){
+class RainAdapter(var data:MutableList<Model.Rain>,var limit:String,var pickDate: Date) : RecyclerView.Adapter<RainAdapter.RainHolder>(){
 
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RainHolder {
@@ -59,7 +59,7 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String) : RecyclerV
                 }else{
                     if(edtRain?.text.toString() == ""){
                         data[adapterPosition].currentRain = 0.0f
-                        d{"onTextChanged currentRain position[$position] = 0.0"}
+                        //d{"onTextChanged currentRain position[$position] = 0.0"}
                     }
                 }
             }
@@ -72,10 +72,10 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String) : RecyclerV
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(!s.isNullOrEmpty() && !s.isNullOrBlank()){
                         data[adapterPosition].currentRain = s.toString().toFloat()
-                        d{"onTextChanged currentRain position[$position] = $s"}
+                        //d{"onTextChanged currentRain position[$position] = $s"}
                     }else{
                         data[adapterPosition].currentRain = 0.0f
-                        d{"onTextChanged currentRain position[$position] = $s"}
+                       // d{"onTextChanged currentRain position[$position] = $s"}
                     }
                 }
             })
@@ -107,7 +107,7 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String) : RecyclerV
                     val appDb = AppDatabase(context)
                     if(appDb.getRainList(limit).size > 0) {
                         d{" Compare for update or add Rain data"}
-                        Utils.compareData(AppDatabase(context), data, limit)
+                        Utils.compareData(AppDatabase(context), data, limit,pickDate)
                     }else{
                         d { "add new Rain data 1st" }
                         data.forEach {
