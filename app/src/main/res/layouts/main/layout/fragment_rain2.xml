@@ -13,10 +13,9 @@
     android:focusable="true">
 
 
-
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/input_card"
         android:layout_margin="10dp"
         app:cardCornerRadius="10dp">
@@ -31,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="กรอกข้อมูลปริมาณน้ำฝน"
+                android:text="กรอกข้อมูลปริมาณน้ำฝน (มม.)"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -40,12 +39,41 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_marginStart="10dp"
-                android:text="ให้ระบุช่องปริมาณน้ำฝนเป็นตัวเลข (มม.)" />
+                android:text="*กรอกข้อมูลปริมาณน้ำฝนอย่างน้อย 7 วัน" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center_vertical"
+                    android:text="ข้อมูลย้อนหลังจำนวน" />
+
+                <Spinner
+                    android:id="@+id/spinnerDay"
+                    android:layout_width="100dp"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/custom_spinner_bg" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_vertical"
+                    android:text="วัน" />
+            </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_date"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="58dp"
+                android:layout_marginTop="8dp">
 
             </android.support.v7.widget.RecyclerView>
         </LinearLayout>
@@ -53,13 +81,16 @@
     </android.support.v7.widget.CardView>
 
     <Button
-        android:layout_alignParentRight="true"
-        android:background="@drawable/button_grey"
-        android:layout_margin="20dp"
         android:id="@+id/btn_save"
         android:layout_width="80dp"
         android:layout_height="40dp"
-        android:text="บันทึก" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="false"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:background="@drawable/button_grey"
+        android:text="บันทึก"
+        android:visibility="gone" />
     </RelativeLayout>
 
     <RelativeLayout

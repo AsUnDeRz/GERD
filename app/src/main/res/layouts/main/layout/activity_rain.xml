@@ -25,7 +25,10 @@
             android:id="@+id/tabView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:background="@color/green"
+            app:tabBackground="@drawable/tab_round"
+            app:tabIndicatorColor="@android:color/transparent"
             app:tabTextColor="@android:color/white" />
     </android.support.design.widget.AppBarLayout>
 

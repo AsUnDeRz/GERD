@@ -148,7 +148,6 @@ class AppDatabase(internal var myCon: Context) : SQLiteOpenHelper(myCon, DATABAS
                     }
                 } while (cursor.moveToNext())
             }
-
         } catch (e: Exception) {
             Timber.d { "Error while trying to get posts from database" }
         } finally {

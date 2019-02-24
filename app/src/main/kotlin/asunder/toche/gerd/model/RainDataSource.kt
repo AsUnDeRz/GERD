@@ -55,6 +55,7 @@ class RainDataSource(val data:MutableList<Model.Rain>) : TableDataSource<String,
 
      fun init() {
         //add header
+         data.add(0,Model.Rain())
         rowsCount = data.size
         columnsCount = 5
 

@@ -155,7 +155,6 @@ String yesterdayAsString = dateFormat.format(calendar.getTime());
                             appDb.updateRain(Model.Rain(it.id,it.date,new.currentRain,0.0f,Model.StatusRain.LOW))
                         }
                     }
-
         }
 
         val lastIndex = dataInDb[dataInDb.lastIndex].date
@@ -174,7 +173,7 @@ String yesterdayAsString = dateFormat.format(calendar.getTime());
                 appDb.addRain(it.currentRain,it.date.time)
             }
         }
-        }
+    }
 
 
     fun synchronizeData(raw:MutableList<Model.Rain>,data:MutableList<Model.Rain>):MutableList<Model.Rain> {

@@ -13,5 +13,7 @@
     <color name="bluePlot">#5A9AD7</color>
     <color name="charcoal">#c8ffffff</color>
     <color name="medium_jungle_green">#FF273238</color>
+    <color name="medium_jungle_green2">#000000</color>
+
 </resources>
 <!--  <color name="charcoal">#FF394249</color> -->

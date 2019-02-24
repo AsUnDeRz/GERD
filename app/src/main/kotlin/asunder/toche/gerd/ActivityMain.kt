@@ -3,21 +3,30 @@ package asunder.toche.gerd
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestListener
+import com.github.ajalt.timberkt.Timber.d
 import com.synnapps.carouselview.ImageListener
 import kotlinx.android.synthetic.main.activity_main.*
 import utils.CustomTabActivityHelper
+import utils.Prefer
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class ActivityMain : AppCompatActivity() {
 
     private var mCustomTabActivityHelper: CustomTabActivityHelper? = null
-    val img = arrayOf("","","","")
+    lateinit var img : ArrayList<String>
+    var mockBg = arrayOf("","","","")
+    var dateList = arrayListOf<String>()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,48 +34,8 @@ class ActivityMain : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         //openCustomTab("http://158.108.44.242/dmrweb/index.php")
         //http://158.108.44.242/dmrweb/index.php
+        setUpImagesForcast()
 
-
-        PushDown.setOnTouchPushDown(btn_back)
-        PushDown.setOnTouchPushDown(btn_next)
-        loadImage(R.drawable.data0)
-        title = "ปัจจุบัน 07:00 น"
-        carousel.pageCount = img.size
-        carousel.setImageListener(imageListener)
-        carousel.currentItem = 1
-        carousel.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {}
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-            override fun onPageSelected(position: Int) {
-                when(position){
-                    0 ->{
-                        title = "เมื่อวาน 07:00 น"
-                        loadImage(R.drawable.data)
-                        btn_back.visibility = View.INVISIBLE
-                        btn_next.visibility = View.VISIBLE
-                    }
-                    1 ->{
-                        title = "ปัจจุบัน 07:00 น"
-                        loadImage(R.drawable.data0)
-                        btn_back.visibility = View.VISIBLE
-                        btn_next.visibility = View.VISIBLE
-                    }
-                    2 ->{
-                        title = "คาดการณ์ล่วงหน้า 1 วัน 07:00 น"
-                        loadImage(R.drawable.data1)
-                        btn_back.visibility = View.VISIBLE
-                        btn_next.visibility = View.VISIBLE
-                    }
-                    3 ->{
-                        title = "คาดการณ์ล่วงหน้า 2 วัน 07:00 น"
-                        loadImage(R.drawable.data2)
-                        btn_back.visibility = View.VISIBLE
-                        btn_next.visibility = View.INVISIBLE
-                    }
-                }
-
-            }
-        })
 
         btn_back.setOnClickListener {
             var current = carousel.currentItem
@@ -76,6 +45,53 @@ class ActivityMain : AppCompatActivity() {
             var current = carousel.currentItem
             carousel.currentItem = current+1
         }
+    }
+
+
+    fun setUpImagesForcast(){
+        img = calUrlImage()
+
+        PushDown.setOnTouchPushDown(btn_back)
+        PushDown.setOnTouchPushDown(btn_next)
+        loadImage(img[1])
+        txtDate.text = "ปัจจุบัน 07:00 น "+dateList[1]
+        carousel.pageCount = mockBg.size
+        carousel.setImageListener(imageListener)
+        carousel.currentItem = 1
+        carousel.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {}
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+            override fun onPageSelected(position: Int) {
+                when(position){
+                    0 ->{
+                        txtDate.text = "เมื่อวาน 07:00 น "+dateList[position]
+                        loadImage(img[position])
+                        btn_back.visibility = View.INVISIBLE
+                        btn_next.visibility = View.VISIBLE
+                    }
+                    1 ->{
+                        txtDate.text = "ปัจจุบัน 07:00 น "+dateList[position]
+                        loadImage(img[position])
+                        btn_back.visibility = View.VISIBLE
+                        btn_next.visibility = View.VISIBLE
+                    }
+                    2 ->{
+                        txtDate.text = "คาดการณ์ล่วงหน้า 1 วัน 07:00 น "+dateList[position]
+                        loadImage(img[position])
+                        btn_back.visibility = View.VISIBLE
+                        btn_next.visibility = View.VISIBLE
+                    }
+                    3 ->{
+                        txtDate.text = "คาดการณ์ล่วงหน้า 2 วัน 07:00 น "+dateList[position]
+                        loadImage(img[position])
+                        btn_back.visibility = View.VISIBLE
+                        btn_next.visibility = View.INVISIBLE
+                    }
+                }
+
+            }
+        })
+
     }
 
 
@@ -136,12 +152,80 @@ class ActivityMain : AppCompatActivity() {
     var imageListener: ImageListener = ImageListener {
         position, imageView ->
         Glide.with(this@ActivityMain)
-                .load(img[position])
+                .load(mockBg[position])
                 .into(imageView)
     }
-    fun loadImage(img:Int){
+    fun loadImage(url: String){
         Glide.with(this@ActivityMain)
-                .load(img)
+                .load(url)
+                .error(R.drawable.data2)
+                .listener(LoggingListener())
                 .into(map)
     }
+
+    fun calUrlImage() : ArrayList<String>{
+        val data = Prefer.getForcast(this)
+        var urlList = arrayListOf<String>()
+        var baseUrl = "http://gerdmodel.ku.ac.th/dmrprogram_new/geopng/"
+        val lastUpdate = Date(Prefer.getLastUpdate(this))
+        dateList = arrayListOf()
+
+
+        if (data != ""){
+            val result = data.substring(1,data.length-1).split(",")
+            result.forEach {
+                urlList.add(baseUrl+it.substring(1,it.length-1))
+                dateList.add(it.substring(1,it.length-5))
+            }
+        }else{
+            urlList.add(baseUrl+getPreviusDate(lastUpdate)+".png")
+            urlList.add(baseUrl+getDateSlash(lastUpdate)+".png")
+            urlList.add(baseUrl+getFutureDate(lastUpdate,1)+".png")
+            urlList.add(baseUrl+getFutureDate(lastUpdate,2)+".png")
+
+            dateList.add(getPreviusDate(lastUpdate))
+            dateList.add(getDateSlash(lastUpdate))
+            dateList.add(getFutureDate(lastUpdate,1))
+            dateList.add(getFutureDate(lastUpdate,2))
+        }
+
+        urlList.forEach {
+            d{it}
+        }
+
+        return urlList
+    }
+
+    fun getDateSlash(date: Date):String{
+        val fmtOut = SimpleDateFormat("yyyy-MM-dd", Locale("en"))
+        return fmtOut.format(date)
+    }
+
+    fun getPreviusDate(date: Date):String{
+        var calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar.add(Calendar.DATE, -1)
+        return getDateSlash(calendar.time)
+    }
+    fun getFutureDate(date: Date,plusDay: Int):String{
+        var calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar.add(Calendar.DATE, plusDay)
+        return getDateSlash(calendar.time)
+    }
+
+    inner class LoggingListener<T, R> : RequestListener<T, R> {
+        override fun onException(e: java.lang.Exception?, model: T, target: com.bumptech.glide.request.target.Target<R>?, isFirstResource: Boolean): Boolean {
+            d{"OnException"}
+            return false
+        }
+
+        override fun onResourceReady(resource: R, model: T, target: com.bumptech.glide.request.target.Target<R>?, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
+            d{"OnResourceReady"}
+            return false
+        }
+    }
+
+
+
 }

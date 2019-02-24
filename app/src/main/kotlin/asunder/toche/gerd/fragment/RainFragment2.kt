@@ -3,20 +3,19 @@ package asunder.toche.gerd
 import adapter.RainAdapter
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import asunder.toche.gerd.Utils.initRain
-import com.github.ajalt.timberkt.Timber.d
+import android.widget.*
 import com.github.ybq.android.spinkit.style.FadingCircle
-import kotlinx.android.synthetic.main.activity_rain.*
 import kotlinx.android.synthetic.main.fragment_rain2.*
+import utils.Prefer
 import java.util.*
+import kotlin.properties.Delegates
 
 
 /**
@@ -39,37 +38,74 @@ class RainFragment2:Fragment(){
         @SuppressLint("StaticFieldLeak")
         lateinit var load:ProgressBar
 
+        @SuppressLint("StaticFieldLeak")
+        lateinit var btnSave :Button
+
+        var isShowSave: Boolean by Delegates.observable(false, { property, oldValue, newValue ->
+            if (newValue) {
+                btnSave.visibility = View.VISIBLE
+            } else {
+                btnSave.visibility = View.GONE
+            }
+
+        })
+
+
+
     }
     lateinit var appDb:AppDatabase
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appDb = AppDatabase(context)
-        adapter = RainAdapter(Utils.synchronizeData(appDb.getRainPrevious("30",Utils.getDateWithFormat(Date())),
-                Utils.initRain(30)), "30",Utils.getDateWithFormat(Date()))
-
+        appDb = AppDatabase(context!!)
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.fragment_rain2, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_rain2, container, false)
         rvDate = view!!.findViewById(R.id.rv_date)
         return view
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        proLoad = view!!.findViewById(R.id.root_load2)
+        proLoad = view.findViewById(R.id.root_load2)
         load = view.findViewById(R.id.pro_load2)
+        btnSave = view.findViewById(R.id.btn_save)
         val fad = FadingCircle()
-        load.indeterminateDrawable =fad
+        load.indeterminateDrawable  = fad
         rvDate.layoutManager = LinearLayoutManager(activity)
         rvDate.hasFixedSize()
+
+        btnSave.setOnClickListener {
+            adapter.DialogSave(context!!)
+        }
+        setSpinner()
+    }
+
+    fun initAdapter(limit :String){
+        adapter = RainAdapter(Utils.synchronizeData(appDb.getRainPrevious(limit,Utils.getDateWithFormat(Date())),
+                Utils.initRain(limit.toInt())), limit,Utils.getDateWithFormat(Date()))
         rvDate.adapter = adapter
 
-        btn_save.setOnClickListener {
-            adapter.DialogSave(context)
+    }
+
+
+    fun setSpinner(){
+        val data = (7 until 31).map { it.toString() }
+        val adapter = ArrayAdapter<String>(activity,R.layout.custom_text_day,data)
+        spinnerDay.adapter = adapter
+        spinnerDay.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                Prefer.setDateLimit(context!!,data[position])
+                initAdapter(data[position])
+            }
         }
+
     }
 
 

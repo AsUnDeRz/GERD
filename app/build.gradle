@@ -5,14 +5,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.geotech.landslide"
         minSdkVersion 18
-        targetSdkVersion 26
-        versionCode 7
-        versionName "1.6"
+        targetSdkVersion 28
+        versionCode 23
+        versionName "2.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -39,7 +39,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:customtabs:$supportVersion"
     implementation "com.android.support:design:$supportVersion"
@@ -64,9 +64,13 @@ dependencies {
     //
     implementation 'de.codecrafters.tableview:tableview:2.8.0'
     implementation project(':Adaptive')
-    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
+    implementation 'com.github.ybq:Android-SpinKit:1.2.0'
     implementation 'com.layer-net:thai-datetimepicker:1.0.3'
-
+    //firebase
+    implementation 'com.google.firebase:firebase-database:16.0.6'
+    implementation 'com.android.volley:volley:1.1.1'
 }
+apply plugin: 'com.google.gms.google-services'
+
 
 

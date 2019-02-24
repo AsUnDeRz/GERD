@@ -20,21 +20,30 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.github.ajalt.timberkt.d
 import com.github.ybq.android.spinkit.style.FadingCircle
 import java.util.*
+import kotlin.properties.Delegates
 
 
 /**
  * Created by ToCHe on 10/26/2017 AD.
  */
-class RainAdapter(var data:MutableList<Model.Rain>,var limit:String,var pickDate: Date) : RecyclerView.Adapter<RainAdapter.RainHolder>(){
+class RainAdapter(var data:MutableList<Model.Rain>,var limit:String,var pickDate: Date)
+    : RecyclerView.Adapter<RainAdapter.RainHolder>(){
 
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RainHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.item_rain,null)
+
+    init {
+        checkShowBtnSave()
+    }
+
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RainHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_rain,null)
         return RainHolder(view)
     }
 
-    override fun onBindViewHolder(holder: RainHolder?, position: Int) {
-        holder?.bind(holder.adapterPosition)
+    override fun onBindViewHolder(holder: RainHolder, position: Int) {
+        holder.bind(holder.adapterPosition)
     }
 
     override fun getItemCount(): Int {
@@ -42,7 +51,7 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String,var pickDate
     }
 
 
-    inner class RainHolder(itemView: View?) : RecyclerView.ViewHolder(itemView){
+    inner class RainHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         fun bind(position: Int){
             var rain = data[position]
             val txtDate = itemView?.findViewById<TextView>(R.id.txt_date)
@@ -66,7 +75,9 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String,var pickDate
 
 
             edtRain?.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {}
+                override fun afterTextChanged(s: Editable?) {
+                    checkShowBtnSave()
+                }
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -104,25 +115,61 @@ class RainAdapter(var data:MutableList<Model.Rain>,var limit:String,var pickDate
                 .negativeText("ยกเลิก")
                 .onPositive { dialog, which ->
                     //save data
-                    val appDb = AppDatabase(context)
-                    if(appDb.getRainList(limit).size > 0) {
-                        d{" Compare for update or add Rain data"}
-                        Utils.compareData(AppDatabase(context), data, limit,pickDate)
+                    if(!checkFillData()){
+                        saveData(context,dialog)
                     }else{
-                        d { "add new Rain data 1st" }
-                        data.forEach {
-                            appDb.addRain(it.currentRain,it.date.time)
-                        }
-                    }
-                    d{"Check size after update =${appDb.getRainList(limit).size}"}
-                    RainFragment2.proLoad.visibility = View.VISIBLE
-                    RainFragment1.loadChart(context)
-                    Handler().postDelayed({
                         dialog.dismiss()
-                        ActivityRain.viewPager.setCurrentItem(0,true)
-                        RainFragment2.proLoad.visibility = View.GONE
-                    },3000)
+                        DialogError(context)
+                    }
                 }
                 .show()
+    }
+    fun DialogError(context: Context){
+        MaterialDialog.Builder(context)
+                .content("กรุณากรอกข้อมูลปริมาณน้ำฝนอย่างน้อย 4 วัน")
+                .positiveText("ตกลง")
+                .show()
+    }
+
+    fun checkFillData() : Boolean{
+        val number = (0..4).count { data[it].currentRain <= 0.0f }
+
+        return number > 0
+
+    }
+
+    fun saveData(context: Context,dialog:MaterialDialog){
+        val appDb = AppDatabase(context)
+        if(appDb.getRainList(limit).size > 0) {
+            d{" Compare for update or add Rain data"}
+            Utils.compareData(AppDatabase(context), data, limit,pickDate)
+        }else{
+            d { "add new Rain data 1st" }
+            data.forEach {
+                appDb.addRain(it.currentRain,it.date.time)
+            }
+        }
+        d{"Check size after update =${appDb.getRainList(limit).size}"}
+        RainFragment2.proLoad.visibility = View.VISIBLE
+        RainFragment1.loadChart(context)
+        Handler().postDelayed({
+            dialog.dismiss()
+            ActivityRain.viewPager.setCurrentItem(0,true)
+            RainFragment2.proLoad.visibility = View.GONE
+        },3000)
+
+    }
+
+    fun checkShowBtnSave(){
+            var isCorrect =false
+            for(position in 0 until 7){
+                val rain = data[position]
+                isCorrect = rain.currentRain > 0.0f
+                if(!isCorrect){
+                    break
+                }
+            }
+        RainFragment2.isShowSave = isCorrect
+
     }
 }

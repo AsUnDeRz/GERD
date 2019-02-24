@@ -8,6 +8,7 @@ import android.graphics.DashPathEffect
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +37,7 @@ import com.github.mikephil.charting.utils.EntryXComparator
 import com.layernet.thaidatetimepicker.date.DatePickerDialog
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import kotlinx.android.synthetic.main.fragment_rain1.*
+import utils.Prefer
 import java.util.*
 
 
@@ -50,12 +52,13 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
         val max = Calendar.getInstance()
         max.set(year,monthOfYear,dayOfMonth,7,0,0)
         pickDate = max.time
+        val dateLimit = Prefer.getDateLimit(context!!)
         //max.add(Calendar.DATE,0)
-        val test = Utils.initPrevious(edt_date_back.text.toString().toInt(), pickDate)
+        val test = Utils.initPrevious(dateLimit, pickDate)
         test.forEach {
             d{"initPrevious $it"}
         }
-        val testDb = appDb.getRainPrevious(edt_date_back.text.toString(), pickDate)
+        val testDb = appDb.getRainPrevious(dateLimit.toString(), pickDate)
         testDb.forEach {
             d{"db $it"}
         }
@@ -64,15 +67,11 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
             d{"after sync $it"}
         }
         dateData.sortByDescending { it.date }
-        RainFragment2.adapter = RainAdapter(dateData,edt_date_back.text.toString(), pickDate)
+        RainFragment2.adapter = RainAdapter(dateData,dateLimit.toString(), pickDate)
         RainFragment2.rvDate.adapter = RainFragment2.adapter
         viewPager.setCurrentItem(1,true)
     }
 
-    fun CheckDateDiff(pickDate:Date){
-
-
-    }
 
     override fun onColumnHeaderClick(column: Int) {
             d {"onColumnHeaderClick $column"}
@@ -270,12 +269,12 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appDb = AppDatabase(context)
+        appDb = AppDatabase(context!!)
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.fragment_rain1, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_rain1, container, false)
 
 
         return view
@@ -283,14 +282,12 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
 
     val DATA_TO_SHOW = arrayOf(arrayOf("This", "is", "a", "test"), arrayOf("and", "a", "second", "test"))
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val calendar = Calendar.getInstance()
         calendar.time = Date()
         calendar.set(calendar.get(Calendar.YEAR)+543,calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),7,0,0)
         pickDate = Utils.getDateWithFormat(Date())
-        edt_date_back.setText("30")
-        spinner.setText("3")
         edt_location.setText(locations[localID])
         edt_date.setText(Utils.getDateSlash(calendar.time))
         viewRoot.inflate()
@@ -301,18 +298,9 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
         //tableView.dataAdapter = SimpleTableDataAdapter(activity,DATA_TO_SHOW)
 
         PushDown.setOnTouchPushDown(btn_update_grap)
-        PushDown.setOnTouchPushDown(btn_update_list)
-        btn_update_list.setOnClickListener {
-            //cal database
-            RainFragment2.adapter = RainAdapter(Utils.synchronizeData(appDb.getRainPrevious("30", pickDate),
-                    Utils.initPrevious(edt_date_back.text.toString().toInt(), pickDate)),edt_date_back.text.toString(), pickDate)
-            RainFragment2.rvDate.adapter = RainFragment2.adapter
-            viewPager.setCurrentItem(1,true)
-
-        }
 
         btn_update_grap.setOnClickListener {
-           loadChart(activity)
+           loadChart(context!!)
             /*
             scrollView.fullScroll(View.FOCUS_DOWN)
             val lastChild = scrollView.getChildAt(scrollView.childCount - 1)
@@ -333,18 +321,11 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
                 rawData.add(it)
             }
             dR.putParcelableArrayListExtra("dr",rawData)
-            startActivity(dR.setClass(activity,ActivityTable::class.java))
+            startActivity(dR.setClass(activity,ActivityRiskBar::class.java))
         }
 
-        spinner.setOnClickListener { view ->
-            val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-            showRain()
-        }
-        spinner.isFocusableInTouchMode = false
-        spinner.isFocusable =false
         edt_date.setOnClickListener { view ->
-            val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
             //showSpinner()
             showDateThai()
@@ -352,7 +333,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
         edt_date.isFocusableInTouchMode = false
         edt_date.isFocusable =false
         edt_location.setOnClickListener { view ->
-            val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
             showLocation()
         }
@@ -362,35 +343,15 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
     }
 
 
-
-
-    fun showRain(){
-        MaterialDialog.Builder(activity)
-                .title("ปริมาณน้ำฝนสะสมราย/วัน")
-                .items(totalRain)
-                .itemsCallbackSingleChoice(-1) { dialog, itemView, which, text ->
-                    spinner.setText(text)
-                    true
-                }
-                /*
-                .itemsCallback({ dialog, view, which, text ->
-                    spinner.setText(text)
-                })
-                */
-                .positiveText("ยืนยัน")
-                .show()
-    }
-
-
     fun showLocation(){
-        MaterialDialog.Builder(activity)
+        MaterialDialog.Builder(context!!)
                 .title("ภูมิภาค")
                 .items(locations)
                 .itemsCallbackSingleChoice(localID) { dialog, itemView, which, text ->
                     localID = which
                     edt_location.setText(locations[which])
                     //setData(localID,ArrayList())
-                    loadChart(activity)
+                    loadChart(context!!)
                     true
                 }
                 .positiveText("ยืนยัน")
@@ -429,7 +390,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
         datePopup.maxDate = max
         min.add(Calendar.DATE,-30)
         datePopup.minDate = min
-        datePopup.show(activity.fragmentManager,"datepicker")
+        datePopup?.show(datePopup.childFragmentManager,"datepicker")
     }
 
 
@@ -521,7 +482,7 @@ class RainFragment1:Fragment(),OnItemClickListener,OnItemLongClickListener,
         //mChart.getViewPortHandler().setMaximumScaleX(2f);
 
         // add_blue data
-        setData(localID,ArrayList(),activity)
+        setData(localID,ArrayList(),context!!)
 
         mChart.animateX(2500)
         //mChart.invalidate()

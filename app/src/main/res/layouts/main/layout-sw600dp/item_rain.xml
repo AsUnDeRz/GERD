@@ -39,7 +39,7 @@
             android:layout_height="match_parent"
             android:ems="10"
             android:gravity="center"
-            android:inputType="number"
+            android:inputType="text"
             android:textSize="16sp" />
 
         <TextView

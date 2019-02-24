@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "35713715673",
+    "firebase_url": "https://gerd-62d89.firebaseio.com",
+    "project_id": "gerd-62d89",
+    "storage_bucket": "gerd-62d89.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35713715673:android:e8252c95fb947dc7",
+        "android_client_info": {
+          "package_name": "com.geotech.landslide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35713715673-b66mb9l5g541o5r73l4mq51lgupcnrvf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4IhJonnGQYgWQhUR4SbQXYtxqhFwjMGY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

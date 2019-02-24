@@ -13,14 +13,18 @@
         android:icon="@drawable/icon_app_yellow"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".ActivityMain">
+        android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".ActivityMain"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".WebViewActivity" />
+        <activity android:name=".WebViewActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ActivityHome"
+            android:screenOrientation="portrait"
             android:hardwareAccelerated="false"
             android:theme="@style/AppTheme.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,10 +32,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActivityRain"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ActivityTable"
-            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"
             android:hardwareAccelerated="false">
+        </activity>
+        <activity android:name=".ActivityRiskBar" >
+
         </activity>
     </application>
 
